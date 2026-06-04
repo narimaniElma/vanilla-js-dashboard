@@ -1,0 +1,135 @@
+<!DOCTYPE html>
+<html lang="fa-IR" dir="rtl">
+
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>مدیریت کاربران</title>
+  <link rel="stylesheet" href="./css/styles.css" />
+  <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
+</head>
+
+<body onload="getUsersData()">
+  <!-- main content -->
+  <main>
+    <!-- Sidebar -->
+    <aside class="sidebar">
+      <header>
+        <a href="/index.html">
+          <img src="./images/logo.png" class="website-logo" alt="" />
+        </a>
+      </header>
+      <main class="side-menu">
+        <ul class="side-container">
+          <li>
+            <a href="/index.html" class="navlink">
+              <span class="navicon"><i class="fa-solid fa-house"></i></span>
+              <span class="title">داشبورد</span>
+            </a>
+          </li>
+          <!-- products -->
+          <li>
+            <a href="./products.html" class="navlink">
+              <span class="navicon"><i class="fa-solid fa-box"></i></span>
+              <span class="title">محصولات</span>
+            </a>
+          </li>
+          <li>
+            <a href="#" class="navlink active">
+              <span class="navicon"><i class="fa-solid fa-users"></i></span>
+              <span class="title">کاربران</span>
+            </a>
+          </li>
+        </ul>
+      </main>
+      <footer></footer>
+      <button class="toggle-sidebar">
+        <!-- Arrow Right -->
+        <i class="fa-solid fa-angle-left"></i>
+      </button>
+    </aside>
+
+    <!-- Content -->
+    <section class="content">
+      <!-- breadcrumbs -->
+      <div class="breadcrumbs">
+        <a href="/" class="breadcrumb">صفحه اصلی</a>
+        <span class="backslack"> / </span>
+        <a href="/users.html"> کاربران </a>
+      </div>
+
+      <!-- Table -->
+      <div class="table-component table-users">
+        <i class="ui-border emerald top"></i>
+        <!-- Table Header -->
+        <div class="section-header">
+          <div>
+            <p class="title-text">لیست کاربران</p>
+            <p class="users-count-text caption-text">
+              <span class="users-data"></span>
+              <span>کاربر ثبت نام کرده اند.</span>
+            </p>
+          </div>
+          <button id="create-user" class="section-link">
+            <span>
+              <span> ایجاد کاربر </span>
+              <!-- Plus icon -->
+              <i class="fa-solid fa-plus"></i>
+            </span>
+          </button>
+        </div>
+
+        <!-- Table Head row -->
+        <div class="table-head-row">
+          <p>نام و نام خانوادگی</p>
+          <p>نام کاربری</p>
+          <p>آدرس ایمیل</p>
+          <p>گذرواژه</p>
+          <p>مدیریت</p>
+        </div>
+
+        <!-- Table body (content) -->
+        <div class="table-body users">
+          <!-- loaded from js -->
+        </div>
+
+        <!-- Table Footer  -->
+        <div class="table-footer">
+          <!-- Pagination -->
+          <div class="pagination pagination-users">
+            <!-- loaded from js -->
+          </div>
+        </div>
+      </div>
+    </section>
+  </main>
+
+  <div class="toast user-toast success hidden">
+    <i class="ui-border top-0"></i>
+    <span class="icon-card">
+      <span class="icon"></span>
+    </span>
+    <span class="toast-content toast-content-user"></span>
+
+    <div class="process-bar">
+      <div class="process process-user"></div>
+    </div>
+  </div>
+
+  <div class="modal-screen modal-user-screen hidden">
+    <div class="modal modal-user">
+      <!-- loaded from js -->
+    </div>
+  </div>
+
+  <button class="theme-button">
+    <!-- Moon icon -->
+    <i class="fas fa-moon"></i>
+    <!-- Sun icon -->
+    <!-- <i class="fas fa-sun"></i> -->
+  </button>
+
+  <script src="../../js/app.js"></script>
+</body>
+
+</html>
