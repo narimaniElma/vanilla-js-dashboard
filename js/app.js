@@ -397,7 +397,6 @@ function editUser() {
 
   mainUser.name = fullNameInput.value;
   mainUser.username = usernameInput.value;
-  mainUser.email = emailInput.value;
   mainUser.password = passwordInput.value;
 
   showUserToast("edit");
@@ -657,7 +656,7 @@ function createProductModal() {
               id="product-title"
             />
             <input
-              type="text"
+              type="number"
               class="modal-input"
               placeholder="قیمت محصول را وارد نمائید ..."
               id="product-price"
