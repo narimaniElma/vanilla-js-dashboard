@@ -10,7 +10,7 @@
   <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.6.0/css/all.min.css" />
 </head>
 
-<body onload="getData()">
+<body">
   <header></header>
 
   <main>
@@ -50,6 +50,7 @@
         <i class="fa-solid fa-angle-left"></i>
       </button>
     </aside>
+
     <section class="content">
       <div class="breadcrumbs">
         <a href="./index.html" class="breadcrumb">داشبورد</a>
@@ -80,29 +81,6 @@
             <p class="hero-card-data users-count"></p>
           </div>
         </article>
-        <!-- <article>
-          <i class="ui-border red top"></i>
-          <i class="ui-border red bottom"></i>
-          <span class="hero-card-icon admins-icon">
-            <i class="fa-solid fa-user-tie"></i>
-          </span>
-          <div>
-            <p class="hero-card-title">مدیران</p>
-            <p class="hero-card-data moderators-data">2</p>
-          </div>
-        </article> -->
-        <!-- <article>
-          <i class="ui-border yellow top"></i>
-          <i class="ui-border yellow bottom"></i>
-         
-          <span class="hero-card-icon tickets-icon">
-            <i class="fa-solid fa-ticket"></i>
-          </span>
-          <div>
-            <p class="hero-card-title">تیکت‌ها</p>
-            <p class="hero-card-data ticket-data">2</p>
-          </div>
-        </article> -->
       </section>
 
       <section class="after-hero">
@@ -119,6 +97,7 @@
           </div>
           <!-- loaded from js -->
         </section>
+
         <section class="table-component">
           <i class="ui-border emerald top"></i>
           <div class="section-header">
@@ -141,7 +120,6 @@
             <p>عنوان محصول</p>
             <p>قیمت محصول</p>
             <p>عنوان کوتاه</p>
-            <p>مدیریت</p>
           </div>
 
           <div class="table-body latest-products">
@@ -197,7 +175,8 @@
     &copy; توسعه داده شده با 💚
   </footer>
 
-  <script src="./js/app.js"></script>
-</body>
+
+  <script type="module" src="./js/index.js"></script>
+  </body>
 
 </html>
