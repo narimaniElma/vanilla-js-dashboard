@@ -72,10 +72,14 @@ function showProductsPagination() {
     paginationProducts.insertAdjacentHTML(
       "beforeend",
       `
-          <span tabindex=${i} class="page ${i === currentProductPage ? "active" : ""}" onclick='handleProductPagination(event)'>${i}</span>
+          <span tabindex=${i} class="page ${i === currentProductPage ? "active" : ""}" >${i}</span>
         `,
     );
-  }
+    }
+    
+    paginationProducts.querySelectorAll(".page").forEach((item) => {
+      item.addEventListener("click", handleProductPagination);
+    });
 }
 
 function handleProductPagination(event) {

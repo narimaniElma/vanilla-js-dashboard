@@ -20,6 +20,7 @@ let currentUserPage = 1;
 
 function showUsers() {
   usersTable.innerHTML = "";
+
   users = data.users.slice(usersStartIndex, usersEndIndex);
 
   users.forEach(function (user) {
@@ -62,18 +63,23 @@ function getUsersData() {
 
 function showUsersPagination() {
   paginationUsers.innerHTML = "";
+
   let userPages = Math.ceil(data.users.length / userPerPage);
 
   for (let i = 1; i <= userPages; i++) {
     paginationUsers.insertAdjacentHTML(
       "beforeend",
       `
-          <span tabindex=${i} class="page ${i === currentUserPage ? "active" : ""}" onclick='handleUserPagination(event)'>
+          <span tabindex=${i} class="page ${i === currentUserPage ? "active" : ""}">
             ${i}
           </span>
         `,
     );
   }
+
+  paginationUsers.querySelectorAll(".page").forEach((item) => {
+    item.addEventListener("click", handleUserPagination);
+  });
 }
 
 function handleUserPagination(event) {
