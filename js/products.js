@@ -24,6 +24,7 @@ let currentProductPage = 1;
 
 function showProducts() {
   productsTable.innerHTML = "";
+
   products = data.products.slice(productsStartIndex, productsEndIndex);
 
   products.forEach(function (product) {
@@ -35,16 +36,29 @@ function showProducts() {
             <p class="product-price">${product.price.toLocaleString()}</p>
             <p class="product-shortName">${product.slug}</p>
             <div class="product-manage">
-              <button class="edit-btn" onclick='showEditProductModal(${product.id})'>
+              <button class="edit-btn" data-id="${product.id}">
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="remove-btn" onclick='showRemoveProductModal(${product.id})'>
+              <button class="remove-btn" data-id="${product.id}">
                 <i class="fas fa-trash-alt"></i>
               </button>
             </div>
           </div>
         `,
     );
+  });
+
+  productsTable.addEventListener("click", (e) => {
+    const editBtn = e.target.closest(".edit-btn");
+    const removeBtn = e.target.closest(".remove-btn");
+
+    if (editBtn) {
+      showEditProductModal(editBtn.dataset.id);
+    }
+
+    if (removeBtn) {
+      showRemoveProductModal(removeBtn.dataset.id);
+    }
   });
 }
 
@@ -75,11 +89,11 @@ function showProductsPagination() {
           <span tabindex=${i} class="page ${i === currentProductPage ? "active" : ""}" >${i}</span>
         `,
     );
-    }
-    
-    paginationProducts.querySelectorAll(".page").forEach((item) => {
-      item.addEventListener("click", handleProductPagination);
-    });
+  }
+
+  paginationProducts.querySelectorAll(".page").forEach((item) => {
+    item.addEventListener("click", handleProductPagination);
+  });
 }
 
 function handleProductPagination(event) {
@@ -144,10 +158,14 @@ function createProductModal() {
           </main>
           <footer class="modal-footer">
             <button class="cancel">انصراف</button>
-            <button class="submit" onclick='createNewProduct()'>تائید</button>
+            <button class="submit">تائید</button>
           </footer>
     `,
   );
+
+  modalProductContainer
+    .querySelector(".submit")
+    .addEventListener("click", createNewProduct);
 
   hideProductModal();
 }
@@ -252,10 +270,14 @@ function removeProductModal() {
           </main>
           <footer class="modal-footer">
             <button class="cancel">انصراف</button>
-            <button class="submit" onclick='removeProduct()'>تائید</button>
+            <button class="submit">تائید</button>
           </footer>
     `,
   );
+
+  modalProductContainer
+    .querySelector(".submit")
+    .addEventListener("click", removeProduct);
 
   hideProductModal();
 }
@@ -265,7 +287,7 @@ function showRemoveProductModal(productId) {
   modalProductScreen.classList.remove("hidden");
 
   mainProductIndex = data.products.findIndex(function (product) {
-    return product.id === productId;
+    return product.id === Number(productId);
   });
 }
 
@@ -278,7 +300,7 @@ function removeProduct() {
 
 function showEditProductModal(productId) {
   mainProduct = data.products.find(function (product) {
-    return product.id === productId;
+    return product.id === Number(productId);
   });
 
   editProductModal(mainProduct);
@@ -323,10 +345,14 @@ function editProductModal(product) {
           </main>
           <footer class="modal-footer">
             <button class="cancel">انصراف</button>
-            <button class="submit" onclick='editProduct()'>تائید</button>
+            <button class="submit">تائید</button>
           </footer>
     `,
   );
+
+  modalProductContainer
+    .querySelector(".submit")
+    .addEventListener("click", editProduct);
 
   hideProductModal();
 }

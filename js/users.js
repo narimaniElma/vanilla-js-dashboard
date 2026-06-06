@@ -33,16 +33,29 @@ function showUsers() {
                 <p class="user-email">${user.email}</p>
                 <p class="user-password">${user.password}</p>
                 <div class="product-manage">
-                    <button class="edit-btn" onclick='showEditUserModal(${user.id})'>                        
+                    <button class="edit-btn" data-id="${user.id}">                        
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="remove-btn" onclick='showRemoveUserModal(${user.id})'>
+                    <button class="remove-btn" data-id="${user.id}">
                         <i class="fas fa-ban"></i>
                     </button>
                 </div>
-                </div>
+            </div>
         `,
     );
+  });
+
+  usersTable.addEventListener("click", (e) => {
+    const editBtn = e.target.closest(".edit-btn");
+    const removeBtn = e.target.closest(".remove-btn");
+
+    if (editBtn) {
+      showEditUserModal(editBtn.dataset.id);
+    }
+
+    if (removeBtn) {
+      showRemoveUserModal(removeBtn.dataset.id);
+    }
   });
 }
 
@@ -159,10 +172,14 @@ function removeUserModal() {
         </main>
         <footer class="modal-footer">
             <button class="cancel">انصراف</button>
-            <button class="submit" onclick='removeUser()'>تائید</button>
+            <button class="submit">تائید</button>
         </footer>
     `,
   );
+
+  modalUserContainer
+    .querySelector(".submit")
+    .addEventListener("click", removeUser);
 
   hideUserModal();
 }
@@ -172,7 +189,7 @@ function showRemoveUserModal(userId) {
   modalUserScreen.classList.remove("hidden");
 
   mainUserIndex = data.users.findIndex(function (user) {
-    return user.id === userId;
+    return user.id === Number(userId);
   });
 }
 
@@ -236,20 +253,25 @@ function editUserModal(user) {
         </main>
         <footer class="modal-footer">
           <button class="cancel">انصراف</button>
-          <button class="submit" onclick='editUser()'>تائید</button>
+          <button class="submit">تائید</button>
         </footer>
     `,
   );
+
+  modalUserContainer
+    .querySelector(".submit")
+    .addEventListener("click", editUser);
 
   hideUserModal();
 }
 
 function showEditUserModal(userId) {
   mainUser = data.users.find(function (user) {
-    return user.id === userId;
+    return user.id === Number(userId);
   });
 
   editUserModal(mainUser);
+
   modalUserScreen.classList.remove("hidden");
 }
 
@@ -261,6 +283,7 @@ function editUser() {
 
   mainUser.name = fullNameInput.value;
   mainUser.username = usernameInput.value;
+  mainUser.email = emailInput.value;
   mainUser.password = passwordInput.value;
 
   showUserToast("edit");
@@ -311,10 +334,14 @@ function createUserModal() {
             </main>
             <footer class="modal-footer">
                 <button class="cancel">انصراف</button>
-                <button class="submit" onclick='createNewUser()'>تائید</button>
+                <button class="submit">تائید</button>
             </footer>
         `,
   );
+
+  modalUserContainer
+    .querySelector(".submit")
+    .addEventListener("click", createNewUser);
 
   hideUserModal();
 }
