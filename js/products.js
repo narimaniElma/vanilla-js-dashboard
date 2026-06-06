@@ -105,7 +105,7 @@ function changePageHandler(selectedPage) {
   productsEndIndex = productsStartIndex + productPerPage;
 
   paginationProductElems.forEach(function (paginationProductElem) {
-    if (paginationProductElem.innerHTML === currentProductPage) {
+    if (paginationProductElem.innerHTML.trim() === currentProductPage) {
       paginationProductElem.classList.add("active");
     } else {
       paginationProductElem.classList.remove("active");
@@ -207,7 +207,6 @@ function updateProductsData() {
 
   showProducts();
   setProductsInLocalStorage();
-  generateProductsPagination();
 }
 
 function showProductToast(type) {

@@ -206,7 +206,6 @@ function updateUsersData() {
 
   showUsers();
   setUsersInLocalStorage();
-  generateUsersPagination();
 }
 
 function editUserModal(user) {
