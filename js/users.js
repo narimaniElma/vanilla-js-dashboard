@@ -69,48 +69,48 @@ function getUsersData() {
   }
 
   showUsers();
-  showUsersPagination();
+  generateUsersPagination();
 
   usersCountElem.innerHTML = data.users.length;
 }
 
-function showUsersPagination() {
+function generateUsersPagination() {
   paginationUsers.innerHTML = "";
 
-  let userPages = Math.ceil(data.users.length / userPerPage);
+  let userPagesCount = Math.ceil(data.users.length / userPerPage);
 
-  for (let i = 1; i <= userPages; i++) {
+  for (let i = 0; i < userPagesCount; i++) {
+    const pageNumber = i + 1;
     paginationUsers.insertAdjacentHTML(
       "beforeend",
       `
-          <span tabindex=${i} class="page ${i === currentUserPage ? "active" : ""}">
-            ${i}
+          <span tabindex=${pageNumber} data-id='${pageNumber}' class="page ${pageNumber === currentUserPage ? "active" : ""}">${pageNumber}
           </span>
         `,
     );
   }
 
   paginationUsers.querySelectorAll(".page").forEach((item) => {
-    item.addEventListener("click", handleUserPagination);
+    item.addEventListener("click", () => changePageHandler(item.dataset.id));
   });
 }
 
-function handleUserPagination(event) {
+function changePageHandler(selectedPage) {
+  currentUserPage = selectedPage;
   const paginationUserElems = paginationUsers.querySelectorAll(".page");
-  currentUserPage = event.target.innerHTML;
 
   usersStartIndex = (currentUserPage - 1) * userPerPage;
-  usersEndIndex = currentUserPage * userPerPage;
-
-  showUsers();
+  usersEndIndex = usersStartIndex + userPerPage;
 
   paginationUserElems.forEach(function (paginationUserElem) {
-    if (paginationUserElem.innerHTML === currentUserPage) {
+    if (paginationUserElem.innerHTML.trim() === currentUserPage) {
       paginationUserElem.classList.add("active");
     } else {
       paginationUserElem.classList.remove("active");
     }
   });
+
+  showUsers();
 }
 
 function showUserToast(type) {
@@ -206,7 +206,7 @@ function updateUsersData() {
 
   showUsers();
   setUsersInLocalStorage();
-  showUsersPagination();
+  generateUsersPagination();
 }
 
 function editUserModal(user) {
