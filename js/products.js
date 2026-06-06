@@ -73,37 +73,36 @@ function getProductsData() {
   }
 
   showProducts();
-  showProductsPagination();
+  generateProductsPagination();
 
   productsCountElem.innerHTML = data.products.length;
 }
 
-function showProductsPagination() {
+function generateProductsPagination() {
   paginationProducts.innerHTML = "";
-  let productPages = Math.ceil(data.products.length / productPerPage);
+  let productPagesCount = Math.ceil(data.products.length / productPerPage);
 
-  for (let i = 1; i <= productPages; i++) {
+  for (let i = 0; i < productPagesCount; i++) {
+    const pageNumber = i + 1;
     paginationProducts.insertAdjacentHTML(
       "beforeend",
       `
-          <span tabindex=${i} class="page ${i === currentProductPage ? "active" : ""}" >${i}</span>
+          <span tabindex=${pageNumber} data-id='${pageNumber}' class="page ${pageNumber === currentProductPage ? "active" : ""}" >${pageNumber}</span>
         `,
     );
   }
 
   paginationProducts.querySelectorAll(".page").forEach((item) => {
-    item.addEventListener("click", handleProductPagination);
+    item.addEventListener("click", () => changePageHandler(item.dataset.id));
   });
 }
 
-function handleProductPagination(event) {
+function changePageHandler(selectedPage) {
+  currentProductPage = selectedPage;
   const paginationProductElems = paginationProducts.querySelectorAll(".page");
-  currentProductPage = event.target.innerHTML;
 
   productsStartIndex = (currentProductPage - 1) * productPerPage;
-  productsEndIndex = currentProductPage * productPerPage;
-
-  showProducts();
+  productsEndIndex = productsStartIndex + productPerPage;
 
   paginationProductElems.forEach(function (paginationProductElem) {
     if (paginationProductElem.innerHTML === currentProductPage) {
@@ -112,6 +111,8 @@ function handleProductPagination(event) {
       paginationProductElem.classList.remove("active");
     }
   });
+
+  showProducts();
 }
 
 function setProductsInLocalStorage() {
@@ -202,11 +203,11 @@ function createNewProduct() {
 
 function updateProductsData() {
   modalProductScreen.classList.add("hidden");
+  productsCountElem.innerHTML = data.products.length;
 
   showProducts();
-  productsCountElem.innerHTML = data.products.length;
   setProductsInLocalStorage();
-  showProductsPagination();
+  generateProductsPagination();
 }
 
 function showProductToast(type) {
