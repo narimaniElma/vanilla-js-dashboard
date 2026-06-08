@@ -1,6 +1,6 @@
 # About This Project
 
-This is a mini CMS project with three pages: Home, Products, and Users. It also supports a dark theme.
+This project focuses on core JavaScript fundamentals and DOM manipulation. It includes three pages: Home, Products, and Users, and also supports a dark mode theme.
 
 ## Home Page
 
