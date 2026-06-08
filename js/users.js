@@ -16,7 +16,7 @@ const userPerPage = 4;
 let users;
 let usersStartIndex = 0;
 let usersEndIndex = userPerPage;
-let currentUserPage = 1;
+let currentUserPage;
 
 function showUsers() {
   usersTable.innerHTML = "";
@@ -74,7 +74,7 @@ function getUsersData() {
   usersCountElem.innerHTML = data.users.length;
 }
 
-function generateUsersPagination() {
+function generateUsersPagination(activePageBox = 1) {
   paginationUsers.innerHTML = "";
 
   let userPagesCount = Math.ceil(data.users.length / userPerPage);
@@ -84,31 +84,31 @@ function generateUsersPagination() {
     paginationUsers.insertAdjacentHTML(
       "beforeend",
       `
-          <span tabindex=${pageNumber} data-id='${pageNumber}' class="page ${pageNumber === currentUserPage ? "active" : ""}">${pageNumber}
+          <span tabindex=${pageNumber} data-id='${pageNumber}' class="page ${pageNumber == activePageBox ? "active" : ""}">${pageNumber}
           </span>
         `,
     );
   }
 
-  paginationUsers.querySelectorAll(".page").forEach((item) => {
-    item.addEventListener("click", () => changePageHandler(item.dataset.id));
+  const pageBoxes = paginationUsers.querySelectorAll(".page");
+
+  pageBoxes.forEach((pageBox) => {
+    pageBox.addEventListener("click", (event) => {
+      currentUserPage = event.target.dataset.id;
+
+      pageBoxes.forEach((item) => {
+        item.classList.remove("active");
+      });
+
+      event.target.classList.add("active");
+      changePageHandler(currentUserPage);
+    });
   });
 }
 
 function changePageHandler(selectedPage) {
-  currentUserPage = selectedPage;
-  const paginationUserElems = paginationUsers.querySelectorAll(".page");
-
-  usersStartIndex = (currentUserPage - 1) * userPerPage;
+  usersStartIndex = (selectedPage - 1) * userPerPage;
   usersEndIndex = usersStartIndex + userPerPage;
-
-  paginationUserElems.forEach(function (paginationUserElem) {
-    if (paginationUserElem.innerHTML.trim() === currentUserPage) {
-      paginationUserElem.classList.add("active");
-    } else {
-      paginationUserElem.classList.remove("active");
-    }
-  });
 
   showUsers();
 }
@@ -196,8 +196,12 @@ function showRemoveUserModal(userId) {
 function removeUser() {
   data.users.splice(mainUserIndex, 1);
 
-  showUserToast("delete");
+  if ((data.users.length + 1) % userPerPage === 1) {
+    generateUsersPagination(currentUserPage);
+  }
+
   updateUsersData();
+  showUserToast("delete");
 }
 
 function updateUsersData() {
@@ -222,7 +226,7 @@ function editUserModal(user) {
         </header>
         <main class="modal-content">
           <input
-            value=${user.name}
+            value='${user.name}'
             type="text"
             class="modal-input"
             placeholder="نام و نام خانوادگی را وارد نمائید ..."
@@ -230,21 +234,21 @@ function editUserModal(user) {
           />
           <input
             type="text"
-            value=${user.username}
+            value='${user.username}'
             class="modal-input"
             id="user-username"
             placeholder="نام کاربری را وارد نمائید ..."
           />
           <input
             type="email"
-            value=${user.email}
+            value='${user.email}'
             class="modal-input"
             id="user-email"
             placeholder="ایمیل را وارد نمائید ..."
           />
           <input
             type="text"
-            value=${user.password}
+            value='${user.password}'
             class="modal-input"
             id="user-password"
             placeholder="رمز عبور را وارد نمائید ..."
@@ -365,8 +369,12 @@ function createNewUser() {
   };
 
   data.users.push(newUser);
-  updateUsersData();
+
+  if (newUser.id % userPerPage === 1) {
+    generateUsersPagination(currentUserPage);
+  }
   showUserToast("create");
+  updateUsersData();
 }
 
 function hideUserModal() {

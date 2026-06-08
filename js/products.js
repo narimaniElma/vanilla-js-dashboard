@@ -20,7 +20,7 @@ const productPerPage = 4;
 let products;
 let productsStartIndex = 0;
 let productsEndIndex = productPerPage;
-let currentProductPage = 1;
+let currentProductPage;
 
 function showProducts() {
   productsTable.innerHTML = "";
@@ -78,8 +78,9 @@ function getProductsData() {
   productsCountElem.innerHTML = data.products.length;
 }
 
-function generateProductsPagination() {
+function generateProductsPagination(activePageBox = 1) {
   paginationProducts.innerHTML = "";
+
   let productPagesCount = Math.ceil(data.products.length / productPerPage);
 
   for (let i = 0; i < productPagesCount; i++) {
@@ -87,30 +88,30 @@ function generateProductsPagination() {
     paginationProducts.insertAdjacentHTML(
       "beforeend",
       `
-          <span tabindex=${pageNumber} data-id='${pageNumber}' class="page ${pageNumber === currentProductPage ? "active" : ""}" >${pageNumber}</span>
+          <span tabindex=${pageNumber} data-id='${pageNumber}' class="page ${pageNumber == activePageBox ? "active" : ""}" >${pageNumber}</span>
         `,
     );
   }
 
-  paginationProducts.querySelectorAll(".page").forEach((item) => {
-    item.addEventListener("click", () => changePageHandler(item.dataset.id));
+  const pageBoxes = paginationProducts.querySelectorAll(".page");
+
+  pageBoxes.forEach((pageBox) => {
+    pageBox.addEventListener("click", (event) => {
+      currentProductPage = event.target.dataset.id;
+
+      pageBoxes.forEach((item) => {
+        item.classList.remove("active");
+      });
+
+      event.target.classList.add("active");
+      changePageHandler(currentProductPage);
+    });
   });
 }
 
 function changePageHandler(selectedPage) {
-  currentProductPage = selectedPage;
-  const paginationProductElems = paginationProducts.querySelectorAll(".page");
-
-  productsStartIndex = (currentProductPage - 1) * productPerPage;
+  productsStartIndex = (selectedPage - 1) * productPerPage;
   productsEndIndex = productsStartIndex + productPerPage;
-
-  paginationProductElems.forEach(function (paginationProductElem) {
-    if (paginationProductElem.innerHTML.trim() === currentProductPage) {
-      paginationProductElem.classList.add("active");
-    } else {
-      paginationProductElem.classList.remove("active");
-    }
-  });
 
   showProducts();
 }
@@ -197,6 +198,11 @@ function createNewProduct() {
   };
 
   data.products.push(newProduct);
+
+  if (newProduct.id % productPerPage === 1) {
+    generateProductsPagination(currentProductPage);
+  }
+
   showProductToast("create");
   updateProductsData();
 }
@@ -294,8 +300,12 @@ function showRemoveProductModal(productId) {
 function removeProduct() {
   data.products.splice(mainProductIndex, 1);
 
-  showProductToast("delete");
+  if ((data.products.length + 1) % productPerPage === 1) {
+    generateProductsPagination(currentProductPage);
+  }
+
   updateProductsData();
+  showProductToast("delete");
 }
 
 function showEditProductModal(productId) {
@@ -323,21 +333,21 @@ function editProductModal(product) {
           <main class="modal-content">
             <input
               type="text"
-              value=${product.title}
+              value='${product.title}'
               class="modal-input"
               placeholder="عنوان محصول را وارد نمائید ..."
               id="product-title"
             />
             <input
               type="text"
-              value=${product.price.toLocaleString()}
+              value='${product.price.toLocaleString()}'
               class="modal-input"
               placeholder="قیمت محصول را وارد نمائید ..."
               id="product-price"
             />
             <input
               type="text"
-              value=${product.slug}
+              value='${product.slug}'
               class="modal-input"
               placeholder="عنوان کوتاه محصول را وارد نمائید ..."
               id="product-shortName"
