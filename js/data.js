@@ -117,7 +117,7 @@ export const data = {
       id: 9,
       title: "لپ تاپ",
       price: 120_000_000,
-      slug: "jorab-a1",
+      slug: "laptop-a1",
     },
     {
       id: 10,
