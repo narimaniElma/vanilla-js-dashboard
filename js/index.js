@@ -1,4 +1,5 @@
-import { data } from './data.js'
+import { data } from "./data.js";
+import { getTheme } from "./theme.js";
 
 const toggleSidebarBtn = document.querySelector(".toggle-sidebar");
 const sidebarElem = document.querySelector(".sidebar");
@@ -20,6 +21,7 @@ function getData() {
 
   showLatestUsers();
   showLatestProducts();
+  getTheme();
 }
 
 function showLatestUsers() {

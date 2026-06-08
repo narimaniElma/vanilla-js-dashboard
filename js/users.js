@@ -1,4 +1,5 @@
 import { data } from "./data.js";
+import { getTheme } from "./theme.js";
 
 const usersCountElem = document.querySelector(".users-data");
 const createUserBtn = document.querySelector("#create-user");
@@ -61,6 +62,7 @@ function showUsers() {
 
 function getUsersData() {
   let users = JSON.parse(localStorage.getItem("users"));
+  getTheme();
 
   if (users) {
     data.users = users;
