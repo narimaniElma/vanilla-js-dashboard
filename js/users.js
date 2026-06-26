@@ -123,22 +123,22 @@ function showUserToast(type) {
   switch (type) {
     case "delete": {
       userToast.className = "toast user-toast failed";
-      userToastContentElem.innerHTML = "محصول با موفقیت حذف شد.";
+      userToastContentElem.innerHTML = "کاربر با موفقیت حذف شد.";
       break;
     }
     case "edit": {
       userToast.className = "toast user-toast success";
-      userToastContentElem.innerHTML = "محصول با موفقیت ویرایش شد.";
+      userToastContentElem.innerHTML = "کاربر با موفقیت ویرایش شد.";
       break;
     }
     case "create": {
       userToast.className = "toast user-toast success";
-      userToastContentElem.innerHTML = "محصول با موفقیت ایجاد شد.";
+      userToastContentElem.innerHTML = "کاربر با موفقیت ایجاد شد.";
       break;
     }
     default: {
       userToast.className = "toast user-toast success";
-      userToastContentElem.innerHTML = "محصول با موفقیت ایجاد شد.";
+      userToastContentElem.innerHTML = "کاربر با موفقیت ایجاد شد.";
     }
   }
 
@@ -228,6 +228,7 @@ function editUserModal(user) {
         </header>
         <main class="modal-content">
           <input
+            required
             value='${user.name}'
             type="text"
             class="modal-input"
@@ -235,6 +236,7 @@ function editUserModal(user) {
             id="user-fullName"
           />
           <input
+            required
             type="text"
             value='${user.username}'
             class="modal-input"
@@ -242,6 +244,7 @@ function editUserModal(user) {
             placeholder="نام کاربری را وارد نمائید ..."
           />
           <input
+            required
             type="email"
             value='${user.email}'
             class="modal-input"
@@ -249,6 +252,7 @@ function editUserModal(user) {
             placeholder="ایمیل را وارد نمائید ..."
           />
           <input
+            required
             type="text"
             value='${user.password}'
             class="modal-input"
@@ -313,29 +317,34 @@ function createUserModal() {
             </header>
             <main class="modal-content">
                 <input
+                  required
                   type="text"
                   class="modal-input"
                   placeholder="نام و نام خانوادگی را وارد نمائید ..."
                   id="user-fullName"
                 />
                 <input
+                  required
                   type="text"
                   class="modal-input"
                   id="user-username"
                   placeholder="نام کاربری را وارد نمائید ..."
                 />
                 <input
+                  required
                   type="email"
                   class="modal-input"
                   id="user-email"
                   placeholder="ایمیل را وارد نمائید ..."
                 />
                 <input
+                  required
                   type="text"
                   class="modal-input"
                   id="user-password"
                   placeholder="رمز عبور را وارد نمائید ..."
                 />
+                <p class='error'></p>
             </main>
             <footer class="modal-footer">
                 <button class="cancel">انصراف</button>
@@ -361,22 +370,72 @@ function createNewUser() {
   const usernameInput = document.querySelector("#user-username");
   const emailInput = document.querySelector("#user-email");
   const passwordInput = document.querySelector("#user-password");
+  const errorElem = document.querySelector(".error");
+  let errorMessage = "";
 
-  const newUser = {
-    id: data.users.length + 1,
-    name: fullNameInput.value,
-    username: usernameInput.value,
-    email: emailInput.value,
-    password: passwordInput.value,
-  };
+  if (fullNameInput.value.length < 3) {
+    errorMessage = `نام و نام خانوادگی باید حداقل 6 کاراکتر باشد.  <br/>`;
 
-  data.users.push(newUser);
+    if (usernameInput.value.length < 3) {
+      errorMessage += `نام کاربری باید حداقل 3 کاراکتر باشد.  <br/>`;
+    }
 
-  if (newUser.id % userPerPage === 1) {
-    generateUsersPagination(currentUserPage);
+    if (!emailInput.value.includes("@") || emailInput.value.length < 8) {
+      errorMessage += ` لطفا ایمیل معتبر وارد کنید.  <br/>`;
+    }
+
+    if (passwordInput.value.length < 8) {
+      errorMessage += `رمز باید حداقل 8 کاراکتر باشد. `;
+    }
+
+    errorElem.innerHTML = errorMessage;
+  } else if (usernameInput.value.length < 3) {
+    errorMessage += `نام کاربری باید حداقل 3 کاراکتر باشد.  <br/>`;
+
+    if (!emailInput.value.includes("@") || emailInput.value.length < 8) {
+      errorMessage += ` لطفا ایمیل معتبر وارد کنید.  <br/>`;
+    }
+
+    if (passwordInput.value.length < 8) {
+      errorMessage += `رمز باید حداقل 8 کاراکتر باشد. `;
+    }
+
+    errorElem.innerHTML = errorMessage;
+  } else if (!emailInput.value.includes("@") || emailInput.value.length < 8) {
+    errorMessage += ` لطفا ایمیل معتبر وارد کنید.  <br/>`;
+
+    if (passwordInput.value.length < 8) {
+      errorMessage += `رمز باید حداقل 8 کاراکتر باشد.  <br/>`;
+    }
+
+    errorElem.innerHTML = errorMessage;
+  } else if (passwordInput.value.length < 8) {
+    errorMessage += `رمز باید حداقل 8 کاراکتر باشد. `;
+
+    errorElem.innerHTML = errorMessage;
+  } else if (
+    data.users.find(function (user) {
+      return user.email === emailInput.value;
+    })
+  ) {
+    errorElem.innerHTML = " قبلا کاربری با این ایمیل ثبت نام کرده است.";
+  } else {
+    const newUser = {
+      id: data.users.length + 1,
+      name: fullNameInput.value,
+      username: usernameInput.value,
+      email: emailInput.value,
+      password: passwordInput.value,
+    };
+
+    data.users.push(newUser);
+
+    if (newUser.id % userPerPage === 1) {
+      generateUsersPagination(currentUserPage);
+    }
+    showUserToast("create");
+    updateUsersData();
   }
-  showUserToast("create");
-  updateUsersData();
 }
 
 function hideUserModal() {
