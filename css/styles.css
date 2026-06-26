@@ -1919,3 +1919,8 @@ input::-webkit-inner-spin-button {
     font-size: 0.6rem;
   }
 }
+
+.error {
+  color: rgb(239 68 68);
+  font-size: 12px;
+}

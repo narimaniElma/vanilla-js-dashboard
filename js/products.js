@@ -140,13 +140,16 @@ function createProductModal() {
           </header>
           <main class="modal-content">
             <input
+              required
               type="text"
               class="modal-input"
+              min='3'
               placeholder="عنوان محصول را وارد نمائید ..."
               id="product-title"
             />
             <input
-              type="text"
+              required
+              type="number"
               class="modal-input"
               placeholder="قیمت محصول را وارد نمائید ..."
               id="product-price"
@@ -157,8 +160,10 @@ function createProductModal() {
               placeholder="عنوان کوتاه محصول را وارد نمائید ..."
               id="product-shortName"
             />
+             <p class='error'>
+            </p>
           </main>
-          <footer class="modal-footer">
+          <footer class="modal-footer">           
             <button class="cancel">انصراف</button>
             <button class="submit">تائید</button>
           </footer>
@@ -189,22 +194,39 @@ function createNewProduct() {
   const titleInput = document.querySelector("#product-title");
   const priceInput = document.querySelector("#product-price");
   const shortNameInput = document.querySelector("#product-shortName");
+  const errorElem = document.querySelector(".error");
+  let errorMessage;
 
-  const newProduct = {
-    id: data.products.length + 1,
-    title: titleInput.value,
-    price: priceInput.value.toLocaleString(),
-    slug: shortNameInput.value,
-  };
+  if (titleInput.value.length < 3) {
+    errorMessage = `عنوان محصول باید حداقل 3 کاراکتر باشد.  <br/>`;
 
-  data.products.push(newProduct);
+    if (!priceInput.value) {
+      errorMessage += `قیمت تعیین نشده است.`;
+    }
 
-  if (newProduct.id % productPerPage === 1) {
-    generateProductsPagination(currentProductPage);
+    errorElem.innerHTML = errorMessage;
+  } else {
+    if (!priceInput.value) {
+      errorMessage = `قیمت تعیین نشده است.`;
+      errorElem.innerHTML = errorMessage;
+    } else {
+      const newProduct = {
+        id: data.products.length + 1,
+        title: titleInput.value,
+        price: Number(priceInput.value),
+        slug: shortNameInput.value,
+      };
+
+      data.products.push(newProduct);
+
+      if (newProduct.id % productPerPage === 1) {
+        generateProductsPagination(currentProductPage);
+      }
+
+      showProductToast("create");
+      updateProductsData();
+    }
   }
-
-  showProductToast("create");
-  updateProductsData();
 }
 
 function updateProductsData() {
@@ -332,6 +354,7 @@ function editProductModal(product) {
           </header>
           <main class="modal-content">
             <input
+              required
               type="text"
               value='${product.title}'
               class="modal-input"
@@ -339,8 +362,9 @@ function editProductModal(product) {
               id="product-title"
             />
             <input
-              type="text"
-              value='${product.price.toLocaleString()}'
+              required
+              type="number"
+              value='${product.price}'
               class="modal-input"
               placeholder="قیمت محصول را وارد نمائید ..."
               id="product-price"
@@ -373,7 +397,7 @@ function editProduct() {
   const shortNameInput = document.querySelector("#product-shortName");
 
   mainProduct.title = titleInput.value;
-  mainProduct.price = priceInput.value.toLocaleString();
+  mainProduct.price = Number(priceInput.value);
   mainProduct.slug = shortNameInput.value;
 
   showProductToast("edit");
