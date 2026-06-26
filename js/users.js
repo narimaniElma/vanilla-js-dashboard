@@ -418,7 +418,7 @@ function createNewUser() {
       return user.email === emailInput.value;
     })
   ) {
-    errorElem.innerHTML = " قبلا کاربری با این ایمیل ثبت نام کرده است.";
+    errorElem.innerHTML = " این ایمیل قبلاً ثبت شده است.";
   } else {
     const newUser = {
       id: data.users.length + 1,

@@ -205,27 +205,31 @@ function createNewProduct() {
     }
 
     errorElem.innerHTML = errorMessage;
+  } else if (!priceInput.value) {
+    errorMessage = `قیمت تعیین نشده است.`;
+    errorElem.innerHTML = errorMessage;
+  } else if (
+    data.products.find(function (product) {
+      return product.title === titleInput.value;
+    })
+  ) {
+    errorElem.innerHTML = "محصولی با این عنوان قبلاً ثبت شده است.";
   } else {
-    if (!priceInput.value) {
-      errorMessage = `قیمت تعیین نشده است.`;
-      errorElem.innerHTML = errorMessage;
-    } else {
-      const newProduct = {
-        id: data.products.length + 1,
-        title: titleInput.value,
-        price: Number(priceInput.value),
-        slug: shortNameInput.value,
-      };
+    const newProduct = {
+      id: data.products.length + 1,
+      title: titleInput.value,
+      price: Number(priceInput.value),
+      slug: shortNameInput.value,
+    };
 
-      data.products.push(newProduct);
+    data.products.push(newProduct);
 
-      if (newProduct.id % productPerPage === 1) {
-        generateProductsPagination(currentProductPage);
-      }
-
-      showProductToast("create");
-      updateProductsData();
+    if (newProduct.id % productPerPage === 1) {
+      generateProductsPagination(currentProductPage);
     }
+
+    showProductToast("create");
+    updateProductsData();
   }
 }
 
