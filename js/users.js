@@ -344,7 +344,7 @@ function createUserModal() {
                   id="user-password"
                   placeholder="رمز عبور را وارد نمائید ..."
                 />
-                <p class='error'></p>
+                <p class='error' style='min-height: 75px'></p>
             </main>
             <footer class="modal-footer">
                 <button class="cancel">انصراف</button>

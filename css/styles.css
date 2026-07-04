@@ -1626,7 +1626,6 @@ input::-webkit-inner-spin-button {
 
 /* Firefox */
 
-
 .remove-text {
   position: relative;
   -webkit-user-select: none;
@@ -1911,4 +1910,5 @@ input::-webkit-inner-spin-button {
 .error {
   color: rgb(239 68 68);
   font-size: 12px;
+  min-height: 40px;
 }
