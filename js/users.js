@@ -344,7 +344,7 @@ function createUserModal() {
                   id="user-password"
                   placeholder="رمز عبور را وارد نمائید ..."
                 />
-                <p class='error' style='min-height: 75px'></p>
+                <p class='error' style='min-height: 90px'></p>
             </main>
             <footer class="modal-footer">
                 <button class="cancel">انصراف</button>
@@ -366,77 +366,65 @@ function showCreateUserModal() {
 }
 
 function createNewUser() {
-  const fullNameInput = document.querySelector("#user-fullName");
-  const usernameInput = document.querySelector("#user-username");
-  const emailInput = document.querySelector("#user-email");
-  const passwordInput = document.querySelector("#user-password");
-  const errorElem = document.querySelector(".error");
-  let errorMessage = "";
+  const fullName = document.querySelector("#user-fullName").value;
+  const username = document.querySelector("#user-username").value;
+  const email = document.querySelector("#user-email").value;
+  const password = document.querySelector("#user-password").value;
 
-  if (fullNameInput.value.length < 3) {
-    errorMessage = `نام و نام خانوادگی باید حداقل 6 کاراکتر باشد.  <br/>`;
+  const isValid = handleValidations(fullName, username, email, password);
 
-    if (usernameInput.value.length < 3) {
-      errorMessage += `نام کاربری باید حداقل 3 کاراکتر باشد.  <br/>`;
-    }
+  if (!isValid) return;
 
-    if (!emailInput.value.includes("@") || emailInput.value.length < 8) {
-      errorMessage += ` لطفا ایمیل معتبر وارد کنید.  <br/>`;
-    }
+  const newUser = {
+    id: data.users.length + 1,
+    name: fullName,
+    username,
+    email,
+    password,
+  };
 
-    if (passwordInput.value.length < 8) {
-      errorMessage += `رمز باید حداقل 8 کاراکتر باشد. `;
-    }
+  data.users.push(newUser);
 
-    errorElem.innerHTML = errorMessage;
-  } else if (usernameInput.value.length < 3) {
-    errorMessage += `نام کاربری باید حداقل 3 کاراکتر باشد.  <br/>`;
-
-    if (!emailInput.value.includes("@") || emailInput.value.length < 8) {
-      errorMessage += ` لطفا ایمیل معتبر وارد کنید.  <br/>`;
-    }
-
-    if (passwordInput.value.length < 8) {
-      errorMessage += `رمز باید حداقل 8 کاراکتر باشد. `;
-    }
-
-    errorElem.innerHTML = errorMessage;
-  } else if (!emailInput.value.includes("@") || emailInput.value.length < 8) {
-    errorMessage += ` لطفا ایمیل معتبر وارد کنید.  <br/>`;
-
-    if (passwordInput.value.length < 8) {
-      errorMessage += `رمز باید حداقل 8 کاراکتر باشد.  <br/>`;
-    }
-
-    errorElem.innerHTML = errorMessage;
-  } else if (passwordInput.value.length < 8) {
-    errorMessage += `رمز باید حداقل 8 کاراکتر باشد. `;
-
-    errorElem.innerHTML = errorMessage;
-  } else if (
-    data.users.find(function (user) {
-      return user.email === emailInput.value;
-    })
-  ) {
-    errorElem.innerHTML = " این ایمیل قبلاً ثبت شده است.";
-  } else {
-    const newUser = {
-      id: data.users.length + 1,
-      name: fullNameInput.value,
-      username: usernameInput.value,
-      email: emailInput.value,
-      password: passwordInput.value,
-    };
-
-    data.users.push(newUser);
-
-    if (newUser.id % userPerPage === 1) {
-      generateUsersPagination(currentUserPage);
-    }
-    showUserToast("create");
-    updateUsersData();
+  if (newUser.id % userPerPage === 1) {
+    generateUsersPagination(currentUserPage);
   }
+  showUserToast("create");
+  updateUsersData();
 }
+
+const handleValidations = (fullName, username, email, password) => {
+  const errorElem = document.querySelector(".error");
+  errorElem.innerHTML = "";
+
+  const errors = [];
+
+  if (fullName.length < 3) {
+    errors.push("نام باید حداقل ۳ کاراکتر باشد.");
+  }
+
+  if (username.length < 3) {
+    errors.push("نام کاربری باید حداقل ۳ کاراکتر باشد.");
+  }
+
+  if (!email.includes("@") || email.length < 8) {
+    errors.push("ایمیل معتبر نیست.");
+  }
+
+  if (password.length < 8) {
+    errors.push("رمز باید حداقل ۸ کاراکتر باشد.");
+  }
+
+  if (data.users.some((user) => user.email === email)) {
+    errors.push("این ایمیل قبلاً ثبت شده است.");
+  }
+
+  if (errors.length) {
+    errorElem.innerHTML = errors.join("<br>");
+    return false;
+  }
+
+  return true;
+};
 
 function hideUserModal() {
   const closeModalIcon = modalUserContainer.querySelector(".close-modal");
