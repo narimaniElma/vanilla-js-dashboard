@@ -259,6 +259,7 @@ function editUserModal(user) {
             id="user-password"
             placeholder="رمز عبور را وارد نمائید ..."
           />
+          <p class='error' style='min-height: 90px'></p>
         </main>
         <footer class="modal-footer">
           <button class="cancel">انصراف</button>
@@ -285,15 +286,19 @@ function showEditUserModal(userId) {
 }
 
 function editUser() {
-  const fullNameInput = document.querySelector("#user-fullName");
-  const usernameInput = document.querySelector("#user-username");
-  const emailInput = document.querySelector("#user-email");
-  const passwordInput = document.querySelector("#user-password");
+  const fullName = document.querySelector("#user-fullName").value;
+  const username = document.querySelector("#user-username").value;
+  const email = document.querySelector("#user-email").value;
+  const password = document.querySelector("#user-password").value;
 
-  mainUser.name = fullNameInput.value;
-  mainUser.username = usernameInput.value;
-  mainUser.email = emailInput.value;
-  mainUser.password = passwordInput.value;
+  const isValid = handleValidation(fullName, username, email, password);
+
+  if (!isValid) return;
+
+  mainUser.name = fullName;
+  mainUser.username = username;
+  mainUser.email = email;
+  mainUser.password = password;
 
   showUserToast("edit");
   updateUsersData();
@@ -371,7 +376,7 @@ function createNewUser() {
   const email = document.querySelector("#user-email").value;
   const password = document.querySelector("#user-password").value;
 
-  const isValid = handleValidations(fullName, username, email, password);
+  const isValid = handleValidation(fullName, username, email, password);
 
   if (!isValid) return;
 
@@ -392,7 +397,7 @@ function createNewUser() {
   updateUsersData();
 }
 
-const handleValidations = (fullName, username, email, password) => {
+const handleValidation = (fullName, username, email, password) => {
   const errorElem = document.querySelector(".error");
   errorElem.innerHTML = "";
 
@@ -410,12 +415,14 @@ const handleValidations = (fullName, username, email, password) => {
     errors.push("ایمیل معتبر نیست.");
   }
 
-  if (password.length < 8) {
-    errors.push("رمز باید حداقل ۸ کاراکتر باشد.");
+  if (
+    data.users.some((user) => user.email === email && mainUser.id !== user.id)
+  ) {
+    errors.push("این ایمیل قبلاً ثبت شده است.");
   }
 
-  if (data.users.some((user) => user.email === email)) {
-    errors.push("این ایمیل قبلاً ثبت شده است.");
+  if (password.length < 8) {
+    errors.push("رمز باید حداقل ۸ کاراکتر باشد.");
   }
 
   if (errors.length) {
