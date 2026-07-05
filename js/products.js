@@ -224,15 +224,16 @@ const handleValidation = (title, price) => {
     errors.push("عنوان محصول باید حداقل 3 کاراکتر باشد.");
   }
 
-  if (!price) {
-    errors.push("قیمت تعیین نشده است.");
-  }
   if (
     data.products.find(function (product) {
-      return product.title === title;
+      return product.title === title && mainProduct.id !== product.id;
     })
   ) {
     errors.push("محصولی با این عنوان قبلاً ثبت شده است.");
+  }
+
+  if (!price) {
+    errors.push("قیمت تعیین نشده است.");
   }
 
   if (errors.length) {
@@ -390,6 +391,7 @@ function editProductModal(product) {
               placeholder="عنوان کوتاه محصول را وارد نمائید ..."
               id="product-shortName"
             />
+             <p class='error'>
           </main>
           <footer class="modal-footer">
             <button class="cancel">انصراف</button>
@@ -406,13 +408,17 @@ function editProductModal(product) {
 }
 
 function editProduct() {
-  const titleInput = document.querySelector("#product-title");
-  const priceInput = document.querySelector("#product-price");
-  const shortNameInput = document.querySelector("#product-shortName");
+  const title = document.querySelector("#product-title").value;
+  const price = document.querySelector("#product-price").value;
+  const shortName = document.querySelector("#product-shortName").value;
 
-  mainProduct.title = titleInput.value;
-  mainProduct.price = Number(priceInput.value);
-  mainProduct.slug = shortNameInput.value;
+  const isValid = handleValidation(title, price);
+
+  if (!isValid) return;
+
+  mainProduct.title = title;
+  mainProduct.price = Number(price);
+  mainProduct.slug = shortName;
 
   showProductToast("edit");
   updateProductsData();
