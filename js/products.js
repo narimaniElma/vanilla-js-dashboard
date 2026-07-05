@@ -191,47 +191,57 @@ function hideProductModal() {
 }
 
 function createNewProduct() {
-  const titleInput = document.querySelector("#product-title");
-  const priceInput = document.querySelector("#product-price");
-  const shortNameInput = document.querySelector("#product-shortName");
+  const title = document.querySelector("#product-title").value;
+  const price = document.querySelector("#product-price").value;
+  const shortName = document.querySelector("#product-shortName").value;
+
+  const isValid = handleValidation(title, price);
+
+  if (!isValid) return;
+
+  const newProduct = {
+    id: data.products.length + 1,
+    title,
+    price: Number(price),
+    slug: shortName,
+  };
+
+  data.products.push(newProduct);
+
+  if (newProduct.id % productPerPage === 1) {
+    generateProductsPagination(currentProductPage);
+  }
+
+  showProductToast("create");
+  updateProductsData();
+}
+
+const handleValidation = (title, price) => {
   const errorElem = document.querySelector(".error");
-  let errorMessage;
+  const errors = [];
 
-  if (titleInput.value.length < 3) {
-    errorMessage = `عنوان محصول باید حداقل 3 کاراکتر باشد.  <br/>`;
+  if (title.length < 3) {
+    errors.push("عنوان محصول باید حداقل 3 کاراکتر باشد.");
+  }
 
-    if (!priceInput.value) {
-      errorMessage += `قیمت تعیین نشده است.`;
-    }
-
-    errorElem.innerHTML = errorMessage;
-  } else if (!priceInput.value) {
-    errorMessage = `قیمت تعیین نشده است.`;
-    errorElem.innerHTML = errorMessage;
-  } else if (
+  if (!price) {
+    errors.push("قیمت تعیین نشده است.");
+  }
+  if (
     data.products.find(function (product) {
-      return product.title === titleInput.value;
+      return product.title === title;
     })
   ) {
-    errorElem.innerHTML = "محصولی با این عنوان قبلاً ثبت شده است.";
-  } else {
-    const newProduct = {
-      id: data.products.length + 1,
-      title: titleInput.value,
-      price: Number(priceInput.value),
-      slug: shortNameInput.value,
-    };
-
-    data.products.push(newProduct);
-
-    if (newProduct.id % productPerPage === 1) {
-      generateProductsPagination(currentProductPage);
-    }
-
-    showProductToast("create");
-    updateProductsData();
+    errors.push("محصولی با این عنوان قبلاً ثبت شده است.");
   }
-}
+
+  if (errors.length) {
+    errorElem.innerHTML = errors.join("<br/>");
+    return false;
+  }
+
+  return true;
+};
 
 function updateProductsData() {
   modalProductScreen.classList.add("hidden");
