@@ -23,15 +23,27 @@ let productsStartIndex = 0;
 let productsEndIndex = productPerPage;
 let currentProductPage;
 
+const fetchData = () => {
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      courses = data;
+      showProducts();
+      setCache("courses", courses);
+      productsCountElem.innerHTML = courses.length;
+    });
+};
+
 function showProducts() {
   productsTable.innerHTML = "";
 
   // products = courses.slice(productsStartIndex, productsEndIndex);
-  console.log("first ", courses);
-  courses.forEach(function (product) {
-    productsTable.insertAdjacentHTML(
-      "beforeend",
-      `
+
+  if (courses) {
+    courses.forEach(function (product) {
+      productsTable.insertAdjacentHTML(
+        "beforeend",
+        `
           <div class="tableRow">
             <p class="product-title">${product.title}</p>
             <p class="product-price">${product.price.toLocaleString()}</p>
@@ -46,8 +58,9 @@ function showProducts() {
             </div>
           </div>
         `,
-    );
-  });
+      );
+    });
+  }
 
   productsTable.addEventListener("click", (e) => {
     const editBtn = e.target.closest(".edit-btn");
@@ -62,18 +75,6 @@ function showProducts() {
     }
   });
 }
-
-const fetchData = () => {
-  fetch(url)
-    .then((response) => response.json())
-    .then((data) => {
-      courses = data;
-      console.log(courses);
-      showProducts();
-      setCache("courses", courses);
-      productsCountElem.innerHTML = courses.length;
-    });
-};
 
 window.addEventListener("load", fetchData);
 
@@ -91,22 +92,26 @@ function getProductsData() {
 
   generateProductsPagination();
 
-  productsCountElem.innerHTML = courses.length;
+  if (courses) {
+    productsCountElem.innerHTML = courses.length;
+  }
 }
 
 function generateProductsPagination(activePageBox = 1) {
   paginationProducts.innerHTML = "";
 
-  let productPagesCount = Math.ceil(courses.length / productPerPage);
+  if (courses) {
+    let productPagesCount = Math.ceil(courses.length / productPerPage);
 
-  for (let i = 0; i < productPagesCount; i++) {
-    const pageNumber = i + 1;
-    paginationProducts.insertAdjacentHTML(
-      "beforeend",
-      `
-          <span tabindex=${pageNumber} data-id='${pageNumber}' class="page ${pageNumber == activePageBox ? "active" : ""}" >${pageNumber}</span>
-        `,
-    );
+    for (let i = 0; i < productPagesCount; i++) {
+      const pageNumber = i + 1;
+      paginationProducts.insertAdjacentHTML(
+        "beforeend",
+        `
+            <span tabindex=${pageNumber} data-id='${pageNumber}' class="page ${pageNumber == activePageBox ? "active" : ""}" >${pageNumber}</span>
+          `,
+      );
+    }
   }
 
   const pageBoxes = paginationProducts.querySelectorAll(".page");
