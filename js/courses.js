@@ -197,9 +197,9 @@ function createProductModal() {
               id="product-price"
             />
             <input
-              type="text"
+              type="number"
               class="modal-input"
-              placeholder="تعداد دانشجو دوره را وارد نمائید ..."
+              placeholder="تعداد دانشجوهای دوره را وارد نمائید ..."
               id="product-registersCount"
             />
              <p class='error'>
@@ -235,27 +235,38 @@ function hideProductModal() {
 function createNewProduct() {
   const title = document.querySelector("#product-title").value;
   const price = document.querySelector("#product-price").value;
-  const shortName = document.querySelector("#product-registersCount").value;
+  const registersCount = document.querySelector(
+    "#product-registersCount",
+  ).value;
 
   const isValid = handleValidation(title, price);
 
   if (!isValid) return;
 
   const newProduct = {
-    id: courses.length + 1,
     title,
-    price: Number(price),
-    slug: shortName,
+    price: +price,
+    registersCount,
+    category: "فرانت اند",
   };
 
-  courses.push(newProduct);
+  fetch(url, {
+    method: "POST",
+    headers: {
+      'content-type': 'application/json'
+    },
+    body: JSON.stringify(newProduct),
+  }).then((response) => {
+    if (response.status === 201) {
+      modalProductScreen.classList.add("hidden");
+      fetchData();
+      showProductToast("create");
+    }
+  });
 
   if (newProduct._id % productPerPage === 1) {
     generateProductsPagination(currentProductPage);
   }
-
-  showProductToast("create");
-  updateProductsData();
 }
 
 const handleValidation = (title, price) => {
@@ -267,6 +278,7 @@ const handleValidation = (title, price) => {
   }
 
   if (
+    courses &&
     courses.find(function (product) {
       return product.title === title && mainProduct._id !== product._id;
     })
@@ -369,7 +381,7 @@ function removeProduct() {
   fetch(`${url}/${courseId}`, {
     method: "DELETE",
   }).then((response) => {
-    if (response.status === 200) {      
+    if (response.status === 200) {
       fetchData();
       modalProductScreen.classList.add("hidden");
       showProductToast("delete");
@@ -457,7 +469,7 @@ function editProduct() {
   mainProduct.slug = shortName;
 
   showProductToast("edit");
-  updateProductsData();
+  // updateProductsData();
 }
 
 document.addEventListener("DOMContentLoaded", getProductsData);
