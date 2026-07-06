@@ -286,14 +286,6 @@ const handleValidation = (title, price) => {
   return true;
 };
 
-function updateProductsData() {
-  modalProductScreen.classList.add("hidden");
-  productsCountElem.innerHTML = courses.length;
-
-  showProducts();
-  setProductsInLocalStorage();
-}
-
 function showProductToast(type) {
   productToast.classList.remove("hidden");
   let step = 1;
@@ -377,9 +369,11 @@ function removeProduct() {
   fetch(`${url}/${courseId}`, {
     method: "DELETE",
   }).then((response) => {
-    console.log(response);
-    updateProductsData();
-    showProductToast("delete");
+    if (response.status === 200) {      
+      fetchData();
+      modalProductScreen.classList.add("hidden");
+      showProductToast("delete");
+    }
   });
 
   if ((courses.length + 1) % productPerPage === 1) {
