@@ -22,6 +22,14 @@ let productsStartIndex = 0;
 let productsEndIndex = productPerPage;
 let currentProductPage;
 
+const fethData = () => {
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => console.log(data));
+};
+
+window.addEventListener("load", fethData);
+
 function showProducts() {
   productsTable.innerHTML = "";
 
@@ -133,7 +141,7 @@ function createProductModal() {
     "beforeend",
     `
           <header class="modal-header">
-            <h3>ایجاد محصول</h3>
+            <h3>ایجاد دوره</h3>
             <button class="close-modal">
               <i class="fas fa-times"></i>
             </button>
@@ -144,20 +152,20 @@ function createProductModal() {
               type="text"
               class="modal-input"
               min='3'
-              placeholder="عنوان محصول را وارد نمائید ..."
+              placeholder="عنوان دوره را وارد نمائید ..."
               id="product-title"
             />
             <input
               required
               type="number"
               class="modal-input"
-              placeholder="قیمت محصول را وارد نمائید ..."
+              placeholder="قیمت دوره را وارد نمائید ..."
               id="product-price"
             />
             <input
               type="text"
               class="modal-input"
-              placeholder="عنوان کوتاه محصول را وارد نمائید ..."
+              placeholder="عنوان کوتاه دوره را وارد نمائید ..."
               id="product-shortName"
             />
              <p class='error'>
@@ -221,7 +229,7 @@ const handleValidation = (title, price) => {
   const errors = [];
 
   if (title.length < 3) {
-    errors.push("عنوان محصول باید حداقل 3 کاراکتر باشد.");
+    errors.push("عنوان دوره باید حداقل 3 کاراکتر باشد.");
   }
 
   if (
@@ -229,7 +237,7 @@ const handleValidation = (title, price) => {
       return product.title === title && mainProduct.id !== product.id;
     })
   ) {
-    errors.push("محصولی با این عنوان قبلاً ثبت شده است.");
+    errors.push("دوره با این عنوان قبلاً ثبت شده است.");
   }
 
   if (!price) {
@@ -260,24 +268,24 @@ function showProductToast(type) {
   switch (type) {
     case "delete": {
       productToast.className = "toast product-toast failed";
-      productToastContentElem.innerHTML = "محصول با موفقیت حذف شد.";
+      productToastContentElem.innerHTML = "دوره با موفقیت حذف شد.";
       break;
     }
     case "edit": {
       productToast.className = "toast product-toast success";
-      productToastContentElem.innerHTML = "محصول با موفقیت ویرایش شد.";
+      productToastContentElem.innerHTML = "دوره با موفقیت ویرایش شد.";
       break;
     }
 
     case "create": {
       productToast.className = "toast product-toast success";
-      productToastContentElem.innerHTML = "محصول با موفقیت ایجاد شد.";
+      productToastContentElem.innerHTML = "دوره با موفقیت ایجاد شد.";
       break;
     }
 
     default: {
       productToast.className = "toast product-toast success";
-      productToastContentElem.innerHTML = "محصول با موفقیت ایجاد شد.";
+      productToastContentElem.innerHTML = "دوره با موفقیت ایجاد شد.";
     }
   }
 
@@ -303,13 +311,13 @@ function removeProductModal() {
           <i class="ui-border top red"></i>
           <i class="ui-border bottom red"></i>
           <header class="modal-header">
-            <h3>حذف محصول</h3>
+            <h3>حذف دوره</h3>
             <button class="close-modal">
               <i class="fas fa-times"></i>
             </button>
           </header>
           <main class="modal-content">
-            <p class="remove-text">آیا از حذف این محصول اطمینان دارید؟</p>
+            <p class="remove-text">آیا از حذف این دوره اطمینان دارید؟</p>
           </main>
           <footer class="modal-footer">
             <button class="cancel">انصراف</button>
@@ -362,7 +370,7 @@ function editProductModal(product) {
     "beforeend",
     `         
          <header class="modal-header">
-            <h3>ویرایش محصول</h3>
+            <h3>ویرایش دوره</h3>
             <button class="close-modal">
               <i class="fas fa-times"></i>
             </button>
@@ -373,7 +381,7 @@ function editProductModal(product) {
               type="text"
               value='${product.title}'
               class="modal-input"
-              placeholder="عنوان محصول را وارد نمائید ..."
+              placeholder="عنوان دوره را وارد نمائید ..."
               id="product-title"
             />
             <input
@@ -381,14 +389,14 @@ function editProductModal(product) {
               type="number"
               value='${product.price}'
               class="modal-input"
-              placeholder="قیمت محصول را وارد نمائید ..."
+              placeholder="قیمت دوره را وارد نمائید ..."
               id="product-price"
             />
             <input
               type="text"
               value='${product.slug}'
               class="modal-input"
-              placeholder="عنوان کوتاه محصول را وارد نمائید ..."
+              placeholder="عنوان کوتاه دوره را وارد نمائید ..."
               id="product-shortName"
             />
              <p class='error'>
