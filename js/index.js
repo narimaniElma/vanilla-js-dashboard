@@ -1,18 +1,11 @@
 import { data } from "./data.js";
 import { getTheme } from "./theme.js";
 
-const toggleSidebarBtn = document.querySelector(".toggle-sidebar");
-const sidebarElem = document.querySelector(".sidebar");
-
 const heroCardProductsCountElem = document.querySelector("p.products-count");
 const homeProductsCountElem = document.querySelector("span.products-count");
 const homeUsersCountElem = document.querySelector(".users-count");
 const latestUsersContainer = document.querySelector(".latest-users");
 const latestProductsContainer = document.querySelector(".latest-products");
-
-function toggleMenue() {
-  sidebarElem.classList.toggle("open");
-}
 
 function getData() {
   heroCardProductsCountElem.innerHTML = data.products.length;
@@ -62,4 +55,3 @@ function showLatestProducts() {
 }
 
 document.addEventListener("DOMContentLoaded", getData);
-toggleSidebarBtn.addEventListener("click", toggleMenue);
