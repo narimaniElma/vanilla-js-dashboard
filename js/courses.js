@@ -18,7 +18,8 @@ let mainProduct;
 
 const productPerPage = 4;
 let courses;
-let courseId;
+let courseIdToRemove;
+let courseIdToUpdate;
 let productsStartIndex = 0;
 let productsEndIndex = productPerPage;
 let currentProductPage;
@@ -248,12 +249,14 @@ function createNewProduct() {
     price: +price,
     registersCount,
     category: "فرانت اند",
+    discount: 0,
+    desc: "توضیحات ندارد",
   };
 
   fetch(url, {
     method: "POST",
     headers: {
-      'content-type': 'application/json'
+      "content-type": "application/json",
     },
     body: JSON.stringify(newProduct),
   }).then((response) => {
@@ -372,13 +375,13 @@ function removeProductModal() {
 }
 
 function showRemoveProductModal(productId) {
-  courseId = productId;
+  courseIdToRemove = productId;
   removeProductModal();
   modalProductScreen.classList.remove("hidden");
 }
 
 function removeProduct() {
-  fetch(`${url}/${courseId}`, {
+  fetch(`${url}/${courseIdToRemove}`, {
     method: "DELETE",
   }).then((response) => {
     if (response.status === 200) {
@@ -394,8 +397,9 @@ function removeProduct() {
 }
 
 function showEditProductModal(productId) {
+  courseIdToUpdate = productId;
   mainProduct = courses.find(function (product) {
-    return product._id === Number(productId);
+    return product._id === productId;
   });
 
   editProductModal(mainProduct);
@@ -434,7 +438,7 @@ function editProductModal(product) {
             />
             <input
               type="text"
-              value='${product.slug}'
+              value='${product.registersCount}'
               class="modal-input"
               placeholder="تعداد دانشجو دوره را وارد نمائید ..."
               id="product-registersCount"
@@ -458,18 +462,40 @@ function editProductModal(product) {
 function editProduct() {
   const title = document.querySelector("#product-title").value;
   const price = document.querySelector("#product-price").value;
-  const shortName = document.querySelector("#product-registersCount").value;
+  const registersCount = document.querySelector(
+    "#product-registersCount",
+  ).value;
 
   const isValid = handleValidation(title, price);
 
   if (!isValid) return;
 
-  mainProduct.title = title;
-  mainProduct.price = Number(price);
-  mainProduct.slug = shortName;
+  // mainProduct.title = title;
+  // mainProduct.price = +price;
+  // mainProduct.registersCount = registersCount;
 
-  showProductToast("edit");
-  // updateProductsData();
+  const updatedCourse = {
+    title,
+    price: +price,
+    registersCount,
+    category: "فرانت اند",
+    discount: 0,
+    desc: "توضیحات ندارد",
+  };
+
+  fetch(`${url}/${courseIdToUpdate}`, {
+    method: "PUT",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(updatedCourse),
+  }).then((response) => {
+    if (response.status === 201) {
+      fetchData();
+      modalProductScreen.classList.add("hidden");
+      showProductToast("edit");
+    }
+  });
 }
 
 document.addEventListener("DOMContentLoaded", getProductsData);
