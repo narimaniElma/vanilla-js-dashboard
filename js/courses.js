@@ -1,5 +1,6 @@
-import { data } from "./data.js";
 import { getTheme } from "./theme.js";
+
+const url = "https://js-cms.iran.liara.run/api/courses";
 
 const productsTable = document.querySelector(".products");
 const createProductBtn = document.querySelector("#create-product");
@@ -17,37 +18,29 @@ let mainProductIndex;
 let mainProduct;
 
 const productPerPage = 4;
-let products;
+let courses;
 let productsStartIndex = 0;
 let productsEndIndex = productPerPage;
 let currentProductPage;
 
-const fethData = () => {
-  fetch(url)
-    .then((response) => response.json())
-    .then((data) => console.log(data));
-};
-
-window.addEventListener("load", fethData);
-
 function showProducts() {
   productsTable.innerHTML = "";
 
-  products = data.products.slice(productsStartIndex, productsEndIndex);
-
-  products.forEach(function (product) {
+  // products = courses.slice(productsStartIndex, productsEndIndex);
+  console.log("first ", courses);
+  courses.forEach(function (product) {
     productsTable.insertAdjacentHTML(
       "beforeend",
       `
           <div class="tableRow">
             <p class="product-title">${product.title}</p>
             <p class="product-price">${product.price.toLocaleString()}</p>
-            <p class="product-shortName">${product.slug}</p>
+            <p class="product-registersCount">${product.registersCount}</p>
             <div class="product-manage">
-              <button class="edit-btn" data-id="${product.id}">
+              <button class="edit-btn" data-id="${product._id}">
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="remove-btn" data-id="${product.id}">
+              <button class="remove-btn" data-id="${product._id}">
                 <i class="fas fa-trash-alt"></i>
               </button>
             </div>
@@ -61,35 +54,50 @@ function showProducts() {
     const removeBtn = e.target.closest(".remove-btn");
 
     if (editBtn) {
-      showEditProductModal(editBtn.dataset.id);
+      showEditProductModal(editBtn.dataset._id);
     }
 
     if (removeBtn) {
-      showRemoveProductModal(removeBtn.dataset.id);
+      showRemoveProductModal(removeBtn.dataset._id);
     }
   });
 }
 
-function getProductsData() {
-  let products = JSON.parse(localStorage.getItem("products"));
-  getTheme();
+const fetchData = () => {
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      courses = data;
+      console.log(courses);
+      showProducts();
+      setCache("courses", courses);
+      productsCountElem.innerHTML = courses.length;
+    });
+};
 
-  if (products) {
-    data.products = products;
+window.addEventListener("load", fetchData);
+
+function getProductsData() {
+  const cashe = getCache("courses", 5 * 60 * 1000);
+
+  if (cashe) {
+    courses = cashe.data;
+    showProducts();
   } else {
-    setProductsInLocalStorage();
+    fetchData();
   }
 
-  showProducts();
+  getTheme();
+
   generateProductsPagination();
 
-  productsCountElem.innerHTML = data.products.length;
+  productsCountElem.innerHTML = courses.length;
 }
 
 function generateProductsPagination(activePageBox = 1) {
   paginationProducts.innerHTML = "";
 
-  let productPagesCount = Math.ceil(data.products.length / productPerPage);
+  let productPagesCount = Math.ceil(courses.length / productPerPage);
 
   for (let i = 0; i < productPagesCount; i++) {
     const pageNumber = i + 1;
@@ -105,7 +113,7 @@ function generateProductsPagination(activePageBox = 1) {
 
   pageBoxes.forEach((pageBox) => {
     pageBox.addEventListener("click", (event) => {
-      currentProductPage = event.target.dataset.id;
+      currentProductPage = event.target.dataset._id;
 
       pageBoxes.forEach((item) => {
         item.classList.remove("active");
@@ -124,8 +132,29 @@ function changePageHandler(selectedPage) {
   showProducts();
 }
 
-function setProductsInLocalStorage() {
-  localStorage.setItem("products", JSON.stringify(data.products));
+const setCache = (key, data) => {
+  localStorage.setItem(
+    key,
+    JSON.stringify({
+      data,
+      savedAt: Date.now(),
+    }),
+  );
+};
+
+function getCache(key, maxTime) {
+  const cache = JSON.parse(localStorage.getItem(key));
+
+  if (!cache) return null;
+
+  const isExpired = Date.now() - cache.savedAt > maxTime;
+
+  if (isExpired) {
+    localStorage.removeItem(key);
+    return null;
+  }
+
+  return cache.data;
 }
 
 function showCreateProductModal() {
@@ -165,8 +194,8 @@ function createProductModal() {
             <input
               type="text"
               class="modal-input"
-              placeholder="عنوان کوتاه دوره را وارد نمائید ..."
-              id="product-shortName"
+              placeholder="تعداد دانشجو دوره را وارد نمائید ..."
+              id="product-registersCount"
             />
              <p class='error'>
             </p>
@@ -201,22 +230,22 @@ function hideProductModal() {
 function createNewProduct() {
   const title = document.querySelector("#product-title").value;
   const price = document.querySelector("#product-price").value;
-  const shortName = document.querySelector("#product-shortName").value;
+  const shortName = document.querySelector("#product-registersCount").value;
 
   const isValid = handleValidation(title, price);
 
   if (!isValid) return;
 
   const newProduct = {
-    id: data.products.length + 1,
+    id: courses.length + 1,
     title,
     price: Number(price),
     slug: shortName,
   };
 
-  data.products.push(newProduct);
+  courses.push(newProduct);
 
-  if (newProduct.id % productPerPage === 1) {
+  if (newProduct._id % productPerPage === 1) {
     generateProductsPagination(currentProductPage);
   }
 
@@ -233,8 +262,8 @@ const handleValidation = (title, price) => {
   }
 
   if (
-    data.products.find(function (product) {
-      return product.title === title && mainProduct.id !== product.id;
+    courses.find(function (product) {
+      return product.title === title && mainProduct._id !== product._id;
     })
   ) {
     errors.push("دوره با این عنوان قبلاً ثبت شده است.");
@@ -254,7 +283,7 @@ const handleValidation = (title, price) => {
 
 function updateProductsData() {
   modalProductScreen.classList.add("hidden");
-  productsCountElem.innerHTML = data.products.length;
+  productsCountElem.innerHTML = courses.length;
 
   showProducts();
   setProductsInLocalStorage();
@@ -337,15 +366,15 @@ function showRemoveProductModal(productId) {
   removeProductModal();
   modalProductScreen.classList.remove("hidden");
 
-  mainProductIndex = data.products.findIndex(function (product) {
-    return product.id === Number(productId);
+  mainProductIndex = courses.findIndex(function (product) {
+    return product._id === Number(productId);
   });
 }
 
 function removeProduct() {
-  data.products.splice(mainProductIndex, 1);
+  courses.splice(mainProductIndex, 1);
 
-  if ((data.products.length + 1) % productPerPage === 1) {
+  if ((courses.length + 1) % productPerPage === 1) {
     generateProductsPagination(currentProductPage);
   }
 
@@ -354,8 +383,8 @@ function removeProduct() {
 }
 
 function showEditProductModal(productId) {
-  mainProduct = data.products.find(function (product) {
-    return product.id === Number(productId);
+  mainProduct = courses.find(function (product) {
+    return product._id === Number(productId);
   });
 
   editProductModal(mainProduct);
@@ -396,8 +425,8 @@ function editProductModal(product) {
               type="text"
               value='${product.slug}'
               class="modal-input"
-              placeholder="عنوان کوتاه دوره را وارد نمائید ..."
-              id="product-shortName"
+              placeholder="تعداد دانشجو دوره را وارد نمائید ..."
+              id="product-registersCount"
             />
              <p class='error'>
           </main>
@@ -418,7 +447,7 @@ function editProductModal(product) {
 function editProduct() {
   const title = document.querySelector("#product-title").value;
   const price = document.querySelector("#product-price").value;
-  const shortName = document.querySelector("#product-shortName").value;
+  const shortName = document.querySelector("#product-registersCount").value;
 
   const isValid = handleValidation(title, price);
 
