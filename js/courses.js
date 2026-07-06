@@ -14,11 +14,11 @@ const productToastContentElem = document.querySelector(
   ".toast-content-product",
 );
 
-let mainProductIndex;
 let mainProduct;
 
 const productPerPage = 4;
 let courses;
+let courseId;
 let productsStartIndex = 0;
 let productsEndIndex = productPerPage;
 let currentProductPage;
@@ -67,11 +67,11 @@ function showProducts() {
     const removeBtn = e.target.closest(".remove-btn");
 
     if (editBtn) {
-      showEditProductModal(editBtn.dataset._id);
+      showEditProductModal(editBtn.dataset.id);
     }
 
     if (removeBtn) {
-      showRemoveProductModal(removeBtn.dataset._id);
+      showRemoveProductModal(removeBtn.dataset.id);
     }
   });
 }
@@ -368,23 +368,23 @@ function removeProductModal() {
 }
 
 function showRemoveProductModal(productId) {
+  courseId = productId;
   removeProductModal();
   modalProductScreen.classList.remove("hidden");
-
-  mainProductIndex = courses.findIndex(function (product) {
-    return product._id === Number(productId);
-  });
 }
 
 function removeProduct() {
-  courses.splice(mainProductIndex, 1);
+  fetch(`${url}/${courseId}`, {
+    method: "DELETE",
+  }).then((response) => {
+    console.log(response);
+    updateProductsData();
+    showProductToast("delete");
+  });
 
   if ((courses.length + 1) % productPerPage === 1) {
     generateProductsPagination(currentProductPage);
   }
-
-  updateProductsData();
-  showProductToast("delete");
 }
 
 function showEditProductModal(productId) {
