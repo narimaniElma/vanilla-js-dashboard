@@ -2,18 +2,18 @@ import { getTheme } from "./theme.js";
 
 const baseUrl = "https://js-cms.iran.liara.run/api";
 
-const heroCardProductsCountElem = document.querySelector("p.products-count");
-const homeProductsCountElem = document.querySelector("span.products-count");
+const heroCardCoursesCountElem = document.querySelector("p.products-count");
+const homeCoursesCountElem = document.querySelector("span.products-count");
 const homeUsersCountElem = document.querySelector(".users-count");
 const latestUsersContainer = document.querySelector(".latest-users");
-const latestProductsContainer = document.querySelector(".latest-products");
+const latestCoursesContainer = document.querySelector(".latest-products");
 
 const getCourses = () => {
   fetch(`${baseUrl}/courses`)
     .then((response) => response.json())
     .then((courses) => {
-      heroCardProductsCountElem.innerHTML = courses.length;
-      homeProductsCountElem.innerHTML = courses.length;
+      heroCardCoursesCountElem.innerHTML = courses.length;
+      homeCoursesCountElem.innerHTML = courses.length;
 
       showLatestCourses(courses);
     });
@@ -52,16 +52,16 @@ function showLatestUsers(users) {
 }
 
 function showLatestCourses(courses) {
-  const latestProducts = courses.splice(-3);
+  const latestCourses = courses.splice(-3);
 
-  latestProducts.forEach(function (latestProduct) {
-    latestProductsContainer.insertAdjacentHTML(
+  latestCourses.forEach(function (latestCourse) {
+    latestCoursesContainer.insertAdjacentHTML(
       "beforeend",
       `
         <div class="tableRow">
-          <p class="product-title">${latestProduct.title}</p>
-          <p class="product-price">${latestProduct.price.toLocaleString()}</p>
-          <p class="product-registersCount">${latestProduct.registersCount}</p>
+          <p class="product-title">${latestCourse.title}</p>
+          <p class="product-price">${latestCourse.price.toLocaleString()}</p>
+          <p class="product-registersCount">${latestCourse.registersCount}</p>
         </div>
       `,
     );

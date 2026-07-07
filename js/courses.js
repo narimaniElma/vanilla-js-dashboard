@@ -3,59 +3,58 @@ import { setCache, getCache } from "../helpers/cashe.js";
 
 const url = "https://js-cms.iran.liara.run/api/courses";
 
-const productsTable = document.querySelector(".products");
-const createProductBtn = document.querySelector("#create-product");
-const modalProductScreen = document.querySelector(".modal-product-screen");
-const modalProductContainer = document.querySelector(".modal-product");
-const productsCountElem = document.querySelector(".products-data");
-const paginationProducts = document.querySelector(".pagination-products");
-const productToast = document.querySelector(".product-toast");
-const productToastProcessElem = document.querySelector(".process-product");
-const productToastContentElem = document.querySelector(
+const coursesTable = document.querySelector(".products");
+const createCourseBtn = document.querySelector("#create-product");
+const modalCourseScreen = document.querySelector(".modal-product-screen");
+const modalCourseContainer = document.querySelector(".modal-product");
+const coursesCountElem = document.querySelector(".products-data");
+const paginationElem = document.querySelector(".pagination-products");
+const toastElem = document.querySelector(".product-toast");
+const toastProcessElem = document.querySelector(".process-product");
+const toastContentElem = document.querySelector(
   ".toast-content-product",
 );
 
-let mainProduct;
+let mainCourse;
 
-const productPerPage = 4;
+const coursePerPage = 4;
 let courses;
 let courseIdToRemove;
 let courseIdToUpdate;
-let productsStartIndex = 0;
-let productsEndIndex = productPerPage;
-let currentProductPage;
+let coursesStartIndex = 0;
+let coursesEndIndex = coursePerPage;
 
 const fetchData = () => {
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
       courses = data;
-      productsCountElem.innerHTML = courses.length;
-      showProducts();
+      coursesCountElem.innerHTML = courses.length;
+      showCourses();
       setCache("courses", courses);
-      generateProductsPagination();
+      generatePagination();
     });
 };
 
-function showProducts() {
-  productsTable.innerHTML = "";
+function showCourses() {
+  coursesTable.innerHTML = "";
 
   if (courses) {
-    const coursesSlic = courses.slice(productsStartIndex, productsEndIndex);
+    const coursesSlic = courses.slice(coursesStartIndex, coursesEndIndex);
 
-    coursesSlic.forEach(function (product) {
-      productsTable.insertAdjacentHTML(
+    coursesSlic.forEach(function (course) {
+      coursesTable.insertAdjacentHTML(
         "beforeend",
         `
           <div class="tableRow">
-            <p class="product-title">${product.title}</p>
-            <p class="product-price">${product.price.toLocaleString()}</p>
-            <p class="product-registersCount">${product.registersCount}</p>
+            <p class="product-title">${course.title}</p>
+            <p class="product-price">${course.price.toLocaleString()}</p>
+            <p class="product-registersCount">${course.registersCount}</p>
             <div class="product-manage">
-              <button class="edit-btn" data-id="${product._id}">
+              <button class="edit-btn" data-id="${course._id}">
                 <i class="fas fa-edit"></i>
               </button>
-              <button class="remove-btn" data-id="${product._id}">
+              <button class="remove-btn" data-id="${course._id}">
                 <i class="fas fa-trash-alt"></i>
               </button>
             </div>
@@ -65,28 +64,28 @@ function showProducts() {
     });
   }
 
-  productsTable.addEventListener("click", (e) => {
+  coursesTable.addEventListener("click", (e) => {
     const editBtn = e.target.closest(".edit-btn");
     const removeBtn = e.target.closest(".remove-btn");
 
     if (editBtn) {
-      showEditProductModal(editBtn.dataset.id);
+      showEditCourseModal(editBtn.dataset.id);
     }
 
     if (removeBtn) {
-      showRemoveProductModal(removeBtn.dataset.id);
+      showRemoveCourseModal(removeBtn.dataset.id);
     }
   });
 }
 
 window.addEventListener("load", fetchData);
 
-function getProductsData() {
+function getCourses() {
   const cashe = getCache("courses", 5 * 60 * 1000);
 
   if (cashe) {
     courses = cashe.data;
-    showProducts();
+    showCourses();
   } else {
     fetchData();
   }
@@ -94,19 +93,19 @@ function getProductsData() {
   getTheme();
 
   if (courses) {
-    productsCountElem.innerHTML = courses.length;
+    coursesCountElem.innerHTML = courses.length;
   }
 }
 
-function generateProductsPagination(activePageBox = 1) {
-  paginationProducts.innerHTML = "";
+function generatePagination(activePageBox = 1) {
+  paginationElem.innerHTML = "";
 
   if (courses) {
-    let productPagesCount = Math.ceil(courses.length / productPerPage);
+    let coursePagesCount = Math.ceil(courses.length / coursePerPage);
 
-    for (let i = 0; i < productPagesCount; i++) {
+    for (let i = 0; i < coursePagesCount; i++) {
       const pageNumber = i + 1;
-      paginationProducts.insertAdjacentHTML(
+      paginationElem.insertAdjacentHTML(
         "beforeend",
         `
             <span tabindex=${pageNumber} data-id='${pageNumber}' class="page ${pageNumber == activePageBox ? "active" : ""}" >${pageNumber}</span>
@@ -115,39 +114,39 @@ function generateProductsPagination(activePageBox = 1) {
     }
   }
 
-  const pageBoxes = paginationProducts.querySelectorAll(".page");
+  const pageBoxes = paginationElem.querySelectorAll(".page");
 
   pageBoxes.forEach((pageBox) => {
     pageBox.addEventListener("click", (event) => {
-      currentProductPage = event.target.dataset.id;
+      const currentCoursePage = event.target.dataset.id;
 
       pageBoxes.forEach((item) => {
         item.classList.remove("active");
       });
 
       event.target.classList.add("active");
-      changePageHandler(currentProductPage);
+      changePageHandler(currentCoursePage);
     });
   });
 }
 
 function changePageHandler(selectedPage) {
-  productsStartIndex = (selectedPage - 1) * productPerPage;
-  productsEndIndex = productsStartIndex + productPerPage;
+  coursesStartIndex = (selectedPage - 1) * coursePerPage;
+  coursesEndIndex = coursesStartIndex + coursePerPage;
 
-  showProducts();
+  showCourses();
 }
 
-function showCreateProductModal() {
-  modalProductScreen.classList.remove("hidden");
+function showCreateCourseModal() {
+  modalCourseScreen.classList.remove("hidden");
 
-  createProductModal();
+  createCourseModal();
 }
 
-function createProductModal() {
-  modalProductContainer.innerHTML = "";
+function createCourseModal() {
+  modalCourseContainer.innerHTML = "";
 
-  modalProductContainer.insertAdjacentHTML(
+  modalCourseContainer.insertAdjacentHTML(
     "beforeend",
     `
           <header class="modal-header">
@@ -188,27 +187,27 @@ function createProductModal() {
     `,
   );
 
-  modalProductContainer
+  modalCourseContainer
     .querySelector(".submit")
-    .addEventListener("click", createNewProduct);
+    .addEventListener("click", createNewCourse);
 
-  hideProductModal();
+  hideModal();
 }
 
-function hideProductModal() {
-  const closeModalIcon = modalProductContainer.querySelector(".close-modal");
-  const closeModalBtn = modalProductContainer.querySelector(".cancel");
+function hideModal() {
+  const closeModalIcon = modalCourseContainer.querySelector(".close-modal");
+  const closeModalBtn = modalCourseContainer.querySelector(".cancel");
 
   closeModalIcon.addEventListener("click", function () {
-    modalProductScreen.classList.add("hidden");
+    modalCourseScreen.classList.add("hidden");
   });
 
   closeModalBtn.addEventListener("click", function () {
-    modalProductScreen.classList.add("hidden");
+    modalCourseScreen.classList.add("hidden");
   });
 }
 
-function createNewProduct() {
+function createNewCourse() {
   const title = document.querySelector("#product-title").value;
   const price = document.querySelector("#product-price").value;
   const registersCount = document.querySelector(
@@ -219,7 +218,7 @@ function createNewProduct() {
 
   if (!isValid) return;
 
-  const newProduct = {
+  const newCourse = {
     title,
     price: +price,
     registersCount,
@@ -233,12 +232,12 @@ function createNewProduct() {
     headers: {
       "content-type": "application/json",
     },
-    body: JSON.stringify(newProduct),
+    body: JSON.stringify(newCourse),
   }).then((response) => {
     if (response.status === 201) {
-      modalProductScreen.classList.add("hidden");
+      modalCourseScreen.classList.add("hidden");
       fetchData();
-      showProductToast("create", "دوره با موفقیت ایجاد شد.");
+      showToast("create", "دوره با موفقیت ایجاد شد.");
     }
   });
 }
@@ -253,8 +252,8 @@ const handleValidation = (title, price) => {
 
   if (
     courses &&
-    courses.find(function (product) {
-      return product.title === title && mainProduct._id !== product._id;
+    courses.find(function (course) {
+      return course.title === title && mainCourse._id !== course._id;
     })
   ) {
     errors.push("دوره با این عنوان قبلاً ثبت شده است.");
@@ -272,40 +271,40 @@ const handleValidation = (title, price) => {
   return true;
 };
 
-function showProductToast(status, message) {
-  productToast.classList.remove("hidden");
-  productToastContentElem.innerHTML = message;
+function showToast(status, message) {
+  toastElem.classList.remove("hidden");
+  toastContentElem.innerHTML = message;
   let step = 1;
 
   if (status === "delete") {
-    productToast.className = "toast product-toast failed";
+    toastElem.className = "toast product-toast failed";
   }
 
   if (status === "edit") {
-    productToast.className = "toast product-toast success";
+    toastElem.className = "toast product-toast success";
   }
 
   if (status === "create") {
-    productToast.className = "toast product-toast success";
+    toastElem.className = "toast product-toast success";
   }
 
-  const productToastInterval = setInterval(() => {
+  const toastInterval = setInterval(() => {
     step++;
 
     if (step > 110) {
-      clearInterval(productToastInterval);
+      clearInterval(toastInterval);
       step = 1;
-      productToast.classList.add("hidden");
+      toastElem.classList.add("hidden");
     }
 
-    productToastProcessElem.style.width = `${step}%`;
+    toastProcessElem.style.width = `${step}%`;
   }, 50);
 }
 
-function removeProductModal() {
-  modalProductContainer.innerHTML = "";
+function removeCourseModal() {
+  modalCourseContainer.innerHTML = "";
 
-  modalProductContainer.insertAdjacentHTML(
+  modalCourseContainer.insertAdjacentHTML(
     "beforeend",
     `         
           <i class="ui-border top red"></i>
@@ -326,46 +325,47 @@ function removeProductModal() {
     `,
   );
 
-  modalProductContainer
+  modalCourseContainer
     .querySelector(".submit")
-    .addEventListener("click", removeProduct);
+    .addEventListener("click", removeCourse);
 
-  hideProductModal();
+  hideModal();
 }
 
-function showRemoveProductModal(productId) {
-  courseIdToRemove = productId;
-  removeProductModal();
-  modalProductScreen.classList.remove("hidden");
+function showRemoveCourseModal(courseId) {
+  courseIdToRemove = courseId;
+  removeCourseModal();
+  modalCourseScreen.classList.remove("hidden");
 }
 
-function removeProduct() {
+function removeCourse() {
   fetch(`${url}/${courseIdToRemove}`, {
     method: "DELETE",
   }).then((response) => {
     if (response.status === 200) {
       fetchData();
-      modalProductScreen.classList.add("hidden");
-      showProductToast("delete", "دوره با موفقیت حذف شد.");
+      modalCourseScreen.classList.add("hidden");
+      showToast("delete", "دوره با موفقیت حذف شد.");
     }
   });
 }
 
-function showEditProductModal(productId) {
-  courseIdToUpdate = productId;
-  mainProduct = courses.find(function (product) {
-    return product._id === productId;
+function showEditCourseModal(courseId) {
+  courseIdToUpdate = courseId;
+
+  mainCourse = courses.find(function (course) {
+    return course._id === courseId;
   });
 
-  editProductModal(mainProduct);
+  editCourseModal(mainCourse);
 
-  modalProductScreen.classList.remove("hidden");
+  modalCourseScreen.classList.remove("hidden");
 }
 
-function editProductModal(product) {
-  modalProductContainer.innerHTML = "";
+function editCourseModal(course) {
+  modalCourseContainer.innerHTML = "";
 
-  modalProductContainer.insertAdjacentHTML(
+  modalCourseContainer.insertAdjacentHTML(
     "beforeend",
     `         
          <header class="modal-header">
@@ -378,7 +378,7 @@ function editProductModal(product) {
             <input
               required
               type="text"
-              value='${product.title}'
+              value='${course.title}'
               class="modal-input"
               placeholder="عنوان دوره را وارد نمائید ..."
               id="product-title"
@@ -386,14 +386,14 @@ function editProductModal(product) {
             <input
               required
               type="number"
-              value='${product.price}'
+              value='${course.price}'
               class="modal-input"
               placeholder="قیمت دوره را وارد نمائید ..."
               id="product-price"
             />
             <input
               type="text"
-              value='${product.registersCount}'
+              value='${course.registersCount}'
               class="modal-input"
               placeholder="تعداد دانشجو دوره را وارد نمائید ..."
               id="product-registersCount"
@@ -407,14 +407,14 @@ function editProductModal(product) {
     `,
   );
 
-  modalProductContainer
+  modalCourseContainer
     .querySelector(".submit")
-    .addEventListener("click", editProduct);
+    .addEventListener("click", editCourse);
 
-  hideProductModal();
+  hideModal();
 }
 
-function editProduct() {
+function editCourse() {
   const title = document.querySelector("#product-title").value;
   const price = document.querySelector("#product-price").value;
   const registersCount = document.querySelector(
@@ -425,9 +425,9 @@ function editProduct() {
 
   if (!isValid) return;
 
-  // mainProduct.title = title;
-  // mainProduct.price = +price;
-  // mainProduct.registersCount = registersCount;
+  // mainCourse.title = title;
+  // mainCourse.price = +price;
+  // mainCourse.registersCount = registersCount;
 
   const updatedCourse = {
     title,
@@ -447,11 +447,11 @@ function editProduct() {
   }).then((response) => {
     if (response.status === 201) {
       fetchData();
-      modalProductScreen.classList.add("hidden");
-      showProductToast("edit", "دوره با موفقیت ویرایش شد.");
+      modalCourseScreen.classList.add("hidden");
+      showToast("edit", "دوره با موفقیت ویرایش شد.");
     }
   });
 }
 
-document.addEventListener("DOMContentLoaded", getProductsData);
-createProductBtn?.addEventListener("click", showCreateProductModal);
+document.addEventListener("DOMContentLoaded", getCourses);
+createCourseBtn?.addEventListener("click", showCreateCourseModal);
