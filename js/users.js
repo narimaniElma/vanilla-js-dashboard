@@ -1,5 +1,7 @@
-import { data } from "./data.js";
 import { getTheme } from "./theme.js";
+import { setCache, getCache } from "../helpers/cashe.js";
+
+const url = "https://js-cms.iran.liara.run/api/users";
 
 const usersCountElem = document.querySelector(".users-data");
 const createUserBtn = document.querySelector("#create-user");
@@ -11,40 +13,54 @@ const userToast = document.querySelector(".user-toast");
 const userToastProcessElem = document.querySelector(".process-user");
 const userToastContentElem = document.querySelector(".toast-content-user");
 
-let mainUserIndex;
 let mainUser;
 const userPerPage = 4;
 let users;
+let userIdToRemove;
+let userIdToUpdate;
 let usersStartIndex = 0;
 let usersEndIndex = userPerPage;
 let currentUserPage;
 
+const fetchData = () => {
+  fetch(url)
+    .then((response) => response.json())
+    .then((data) => {
+      users = data;
+      showUsers();
+      setCache("users", users);
+      usersCountElem.innerHTML = users.length;
+    });
+};
+
 function showUsers() {
   usersTable.innerHTML = "";
 
-  users = data.users.slice(usersStartIndex, usersEndIndex);
+  // users = users.slice(usersStartIndex, usersEndIndex);
 
-  users.forEach(function (user) {
-    usersTable.insertAdjacentHTML(
-      "beforeend",
-      `
+  if (users) {
+    users.forEach(function (user) {
+      usersTable.insertAdjacentHTML(
+        "beforeend",
+        `
             <div class="tableRow">
-                <p class="user-fullName">${user.name}</p>
+                <p class="user-firstname">${user.firstname}</p>
+                <p class="user-lastname">${user.lastname}</p>
                 <p class="user-username">${user.username}</p>
                 <p class="user-email">${user.email}</p>
-                <p class="user-password">${user.password}</p>
                 <div class="product-manage">
-                    <button class="edit-btn" data-id="${user.id}">                        
+                    <button class="edit-btn" data-id="${user._id}">                        
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="remove-btn" data-id="${user.id}">
+                    <button class="remove-btn" data-id="${user._id}">
                         <i class="fas fa-ban"></i>
                     </button>
                 </div>
             </div>
         `,
-    );
-  });
+      );
+    });
+  }
 
   usersTable.addEventListener("click", (e) => {
     const editBtn = e.target.closest(".edit-btn");
@@ -61,35 +77,40 @@ function showUsers() {
 }
 
 function getUsersData() {
-  let users = JSON.parse(localStorage.getItem("users"));
-  getTheme();
+  const cashe = getCache("users", 5 * 60 * 1000);
 
-  if (users) {
-    data.users = users;
+  if (cashe) {
+    users = cashe.data;
+    showUsers();
   } else {
-    setUsersInLocalStorage();
+    fetchData();
   }
 
-  showUsers();
+  getTheme();
+
   generateUsersPagination();
 
-  usersCountElem.innerHTML = data.users.length;
+  if (users) {
+    usersCountElem.innerHTML = users.length;
+  }
 }
 
 function generateUsersPagination(activePageBox = 1) {
   paginationUsers.innerHTML = "";
 
-  let userPagesCount = Math.ceil(data.users.length / userPerPage);
+  if (users) {
+    let userPagesCount = Math.ceil(users.length / userPerPage);
 
-  for (let i = 0; i < userPagesCount; i++) {
-    const pageNumber = i + 1;
-    paginationUsers.insertAdjacentHTML(
-      "beforeend",
-      `
+    for (let i = 0; i < userPagesCount; i++) {
+      const pageNumber = i + 1;
+      paginationUsers.insertAdjacentHTML(
+        "beforeend",
+        `
           <span tabindex=${pageNumber} data-id='${pageNumber}' class="page ${pageNumber == activePageBox ? "active" : ""}">${pageNumber}
           </span>
         `,
-    );
+      );
+    }
   }
 
   const pageBoxes = paginationUsers.querySelectorAll(".page");
@@ -187,31 +208,25 @@ function removeUserModal() {
 }
 
 function showRemoveUserModal(userId) {
+  userIdToRemove = userId;
   removeUserModal();
   modalUserScreen.classList.remove("hidden");
-
-  mainUserIndex = data.users.findIndex(function (user) {
-    return user.id === Number(userId);
-  });
 }
 
 function removeUser() {
-  data.users.splice(mainUserIndex, 1);
+  fetch(`${url}/${userIdToRemove}`, {
+    method: "DELETE",
+  }).then((response) => {
+    if (response.status === 200) {
+      fetchData();
+      modalUserScreen.classList.add("hidden");
+      showUserToast("delete");
+    }
+  });
 
-  if ((data.users.length + 1) % userPerPage === 1) {
+  if ((users.length + 1) % userPerPage === 1) {
     generateUsersPagination(currentUserPage);
   }
-
-  updateUsersData();
-  showUserToast("delete");
-}
-
-function updateUsersData() {
-  modalUserScreen.classList.add("hidden");
-  usersCountElem.innerHTML = data.users.length;
-
-  showUsers();
-  setUsersInLocalStorage();
 }
 
 function editUserModal(user) {
@@ -229,11 +244,19 @@ function editUserModal(user) {
         <main class="modal-content">
           <input
             required
-            value='${user.name}'
+            value='${user.firstname}'
             type="text"
             class="modal-input"
-            placeholder="نام و نام خانوادگی را وارد نمائید ..."
-            id="user-fullName"
+            placeholder="نام را وارد نمائید ..."
+            id="user-firstname"
+          />
+          <input
+            required
+            value='${user.lastname}'
+            type="text"
+            class="modal-input"
+            placeholder="نام خانوادگی را وارد نمائید ..."
+            id="user-lastname"
           />
           <input
             required
@@ -250,14 +273,6 @@ function editUserModal(user) {
             class="modal-input"
             id="user-email"
             placeholder="ایمیل را وارد نمائید ..."
-          />
-          <input
-            required
-            type="text"
-            value='${user.password}'
-            class="modal-input"
-            id="user-password"
-            placeholder="رمز عبور را وارد نمائید ..."
           />
           <p class='error' style='min-height: 90px'></p>
         </main>
@@ -276,8 +291,9 @@ function editUserModal(user) {
 }
 
 function showEditUserModal(userId) {
-  mainUser = data.users.find(function (user) {
-    return user.id === Number(userId);
+  userIdToUpdate = userId;
+  mainUser = users.find(function (user) {
+    return user._id === userId;
   });
 
   editUserModal(mainUser);
@@ -286,26 +302,41 @@ function showEditUserModal(userId) {
 }
 
 function editUser() {
-  const fullName = document.querySelector("#user-fullName").value;
+  const firstname = document.querySelector("#user-firstname").value;
+  const lastname = document.querySelector("#user-lastname").value;
   const username = document.querySelector("#user-username").value;
   const email = document.querySelector("#user-email").value;
-  const password = document.querySelector("#user-password").value;
 
-  const isValid = handleValidation(fullName, username, email, password);
+  const isValid = handleValidation(firstname, lastname, username, email);
 
   if (!isValid) return;
 
-  mainUser.name = fullName;
-  mainUser.username = username;
-  mainUser.email = email;
-  mainUser.password = password;
+  // mainUser.name = fullName;
+  // mainUser.username = username;
+  // mainUser.email = email;
 
-  showUserToast("edit");
-  updateUsersData();
-}
+  const updatedUser = {
+    firstname,
+    lastname,
+    username,
+    email,
+    age: 20,
+    city: "تهران",
+  };
 
-function setUsersInLocalStorage() {
-  localStorage.setItem("users", JSON.stringify(data.users));
+  fetch(`${url}/${userIdToUpdate}`, {
+    method: "PUT",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(updatedUser),
+  }).then((response) => {
+    if (response.status === 200) {
+      modalUserScreen.classList.add("hidden");
+      fetchData();
+      showUserToast("edit");
+    }
+  });
 }
 
 function createUserModal() {
@@ -325,8 +356,15 @@ function createUserModal() {
                   required
                   type="text"
                   class="modal-input"
-                  placeholder="نام و نام خانوادگی را وارد نمائید ..."
-                  id="user-fullName"
+                  placeholder="نام را وارد نمائید ..."
+                  id="user-firstname"
+                />
+                <input
+                  required
+                  type="text"
+                  class="modal-input"
+                  placeholder="نام خانوادگی را وارد نمائید ..."
+                  id="user-lastname"
                 />
                 <input
                   required
@@ -341,13 +379,6 @@ function createUserModal() {
                   class="modal-input"
                   id="user-email"
                   placeholder="ایمیل را وارد نمائید ..."
-                />
-                <input
-                  required
-                  type="text"
-                  class="modal-input"
-                  id="user-password"
-                  placeholder="رمز عبور را وارد نمائید ..."
                 />
                 <p class='error' style='min-height: 90px'></p>
             </main>
@@ -367,44 +398,60 @@ function createUserModal() {
 
 function showCreateUserModal() {
   modalUserScreen.classList.remove("hidden");
+
   createUserModal();
 }
 
 function createNewUser() {
-  const fullName = document.querySelector("#user-fullName").value;
+  const firstname = document.querySelector("#user-firstname").value;
+  const lastname = document.querySelector("#user-lastname").value;
   const username = document.querySelector("#user-username").value;
   const email = document.querySelector("#user-email").value;
-  const password = document.querySelector("#user-password").value;
 
-  const isValid = handleValidation(fullName, username, email, password);
+  const isValid = handleValidation(firstname, lastname, username, email);
 
   if (!isValid) return;
 
   const newUser = {
-    id: data.users.length + 1,
-    name: fullName,
+    firstname,
+    lastname,
     username,
     email,
-    password,
+    age: 20,
+    city: "تهران",
   };
 
-  data.users.push(newUser);
+  fetch(url, {
+    method: "POST",
+    headers: {
+      "content-type": "application/json",
+    },
+    body: JSON.stringify(newUser),
+  }).then((response) => {
+    if (response.status === 201) {
+      modalUserScreen.classList.add("hidden");
+      fetchData();
+      showUserToast("create");
+    }
+  });
 
-  if (newUser.id % userPerPage === 1) {
+  if (newUser._id % userPerPage === 1) {
     generateUsersPagination(currentUserPage);
   }
-  showUserToast("create");
-  updateUsersData();
 }
 
-const handleValidation = (fullName, username, email, password) => {
+const handleValidation = (firstname, lastname, username, email) => {
   const errorElem = document.querySelector(".error");
   errorElem.innerHTML = "";
 
   const errors = [];
 
-  if (fullName.length < 3) {
+  if (firstname.length < 3) {
     errors.push("نام باید حداقل ۳ کاراکتر باشد.");
+  }
+
+  if (lastname.length < 3) {
+    errors.push("نام خانوادگی باید حداقل ۳ کاراکتر باشد.");
   }
 
   if (username.length < 3) {
@@ -415,14 +462,8 @@ const handleValidation = (fullName, username, email, password) => {
     errors.push("ایمیل معتبر نیست.");
   }
 
-  if (
-    data.users.some((user) => user.email === email && mainUser.id !== user.id)
-  ) {
+  if (users.some((user) => user.email === email && mainUser._id !== user._id)) {
     errors.push("این ایمیل قبلاً ثبت شده است.");
-  }
-
-  if (password.length < 8) {
-    errors.push("رمز باید حداقل ۸ کاراکتر باشد.");
   }
 
   if (errors.length) {
@@ -446,5 +487,6 @@ function hideUserModal() {
   });
 }
 
+window.addEventListener("load", fetchData);
 document.addEventListener("DOMContentLoaded", getUsersData);
 createUserBtn?.addEventListener("click", showCreateUserModal);
