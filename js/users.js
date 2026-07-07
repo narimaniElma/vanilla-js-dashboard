@@ -27,19 +27,20 @@ const fetchData = () => {
     .then((response) => response.json())
     .then((data) => {
       users = data;
+      usersCountElem.innerHTML = users.length;
       showUsers();
       setCache("users", users);
-      usersCountElem.innerHTML = users.length;
+      generateUsersPagination();
     });
 };
 
 function showUsers() {
   usersTable.innerHTML = "";
 
-  // users = users.slice(usersStartIndex, usersEndIndex);
-
   if (users) {
-    users.forEach(function (user) {
+    const usersSlice = users.slice(usersStartIndex, usersEndIndex);
+
+    usersSlice.forEach(function (user) {
       usersTable.insertAdjacentHTML(
         "beforeend",
         `
@@ -87,8 +88,6 @@ function getUsersData() {
   }
 
   getTheme();
-
-  generateUsersPagination();
 
   if (users) {
     usersCountElem.innerHTML = users.length;
@@ -224,9 +223,6 @@ function removeUser() {
     }
   });
 
-  if ((users.length + 1) % userPerPage === 1) {
-    generateUsersPagination(currentUserPage);
-  }
 }
 
 function editUserModal(user) {
@@ -434,10 +430,6 @@ function createNewUser() {
       showUserToast("create");
     }
   });
-
-  if (newUser._id % userPerPage === 1) {
-    generateUsersPagination(currentUserPage);
-  }
 }
 
 const handleValidation = (firstname, lastname, username, email) => {

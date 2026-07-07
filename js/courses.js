@@ -29,19 +29,20 @@ const fetchData = () => {
     .then((response) => response.json())
     .then((data) => {
       courses = data;
+      productsCountElem.innerHTML = courses.length;
       showProducts();
       setCache("courses", courses);
-      productsCountElem.innerHTML = courses.length;
+      generateProductsPagination();
     });
 };
 
 function showProducts() {
   productsTable.innerHTML = "";
 
-  // products = courses.slice(productsStartIndex, productsEndIndex);
-
   if (courses) {
-    courses.forEach(function (product) {
+    const coursesSlic = courses.slice(productsStartIndex, productsEndIndex);
+
+    coursesSlic.forEach(function (product) {
       productsTable.insertAdjacentHTML(
         "beforeend",
         `
@@ -91,8 +92,6 @@ function getProductsData() {
 
   getTheme();
 
-  generateProductsPagination();
-
   if (courses) {
     productsCountElem.innerHTML = courses.length;
   }
@@ -119,7 +118,7 @@ function generateProductsPagination(activePageBox = 1) {
 
   pageBoxes.forEach((pageBox) => {
     pageBox.addEventListener("click", (event) => {
-      currentProductPage = event.target.dataset._id;
+      currentProductPage = event.target.dataset.id;
 
       pageBoxes.forEach((item) => {
         item.classList.remove("active");
@@ -266,10 +265,6 @@ function createNewProduct() {
       showProductToast("create");
     }
   });
-
-  if (newProduct._id % productPerPage === 1) {
-    generateProductsPagination(currentProductPage);
-  }
 }
 
 const handleValidation = (title, price) => {
@@ -390,10 +385,6 @@ function removeProduct() {
       showProductToast("delete");
     }
   });
-
-  if ((courses.length + 1) % productPerPage === 1) {
-    generateProductsPagination(currentProductPage);
-  }
 }
 
 function showEditProductModal(productId) {
