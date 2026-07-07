@@ -135,31 +135,21 @@ function changePageHandler(selectedPage) {
   showUsers();
 }
 
-function showUserToast(type) {
+function showUserToast(status, message) {
   userToast.classList.remove("hidden");
+  userToastContentElem.innerHTML = message;
   let step = 1;
-  userToastContentElem.innerHTML = "";
 
-  switch (type) {
-    case "delete": {
-      userToast.className = "toast user-toast failed";
-      userToastContentElem.innerHTML = "کاربر با موفقیت حذف شد.";
-      break;
-    }
-    case "edit": {
-      userToast.className = "toast user-toast success";
-      userToastContentElem.innerHTML = "کاربر با موفقیت ویرایش شد.";
-      break;
-    }
-    case "create": {
-      userToast.className = "toast user-toast success";
-      userToastContentElem.innerHTML = "کاربر با موفقیت ایجاد شد.";
-      break;
-    }
-    default: {
-      userToast.className = "toast user-toast success";
-      userToastContentElem.innerHTML = "کاربر با موفقیت ایجاد شد.";
-    }
+  if (status === "delete") {
+    userToast.className = "toast user-toast failed";
+  }
+
+  if (status === "edit") {
+    userToast.className = "toast user-toast success";
+  }
+
+  if (status === "create") {
+    userToast.className = "toast user-toast success";
   }
 
   const userToastInterval = setInterval(() => {
@@ -219,10 +209,9 @@ function removeUser() {
     if (response.status === 200) {
       fetchData();
       modalUserScreen.classList.add("hidden");
-      showUserToast("delete");
+      showUserToast("delete", "کاربر با موفقیت حذف شد.");
     }
   });
-
 }
 
 function editUserModal(user) {
@@ -330,7 +319,7 @@ function editUser() {
     if (response.status === 200) {
       modalUserScreen.classList.add("hidden");
       fetchData();
-      showUserToast("edit");
+      showUserToast("edit", "کاربر با موفقیت ویرایش شد.");
     }
   });
 }
@@ -427,7 +416,7 @@ function createNewUser() {
     if (response.status === 201) {
       modalUserScreen.classList.add("hidden");
       fetchData();
-      showUserToast("create");
+      showUserToast("create", "کاربر با موفقیت ایجاد شد.");
     }
   });
 }

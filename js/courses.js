@@ -1,4 +1,5 @@
 import { getTheme } from "./theme.js";
+import { setCache, getCache } from "../helpers/cashe.js";
 
 const url = "https://js-cms.iran.liara.run/api/courses";
 
@@ -137,31 +138,6 @@ function changePageHandler(selectedPage) {
   showProducts();
 }
 
-const setCache = (key, data) => {
-  localStorage.setItem(
-    key,
-    JSON.stringify({
-      data,
-      savedAt: Date.now(),
-    }),
-  );
-};
-
-function getCache(key, maxTime) {
-  const cache = JSON.parse(localStorage.getItem(key));
-
-  if (!cache) return null;
-
-  const isExpired = Date.now() - cache.savedAt > maxTime;
-
-  if (isExpired) {
-    localStorage.removeItem(key);
-    return null;
-  }
-
-  return cache.data;
-}
-
 function showCreateProductModal() {
   modalProductScreen.classList.remove("hidden");
 
@@ -262,7 +238,7 @@ function createNewProduct() {
     if (response.status === 201) {
       modalProductScreen.classList.add("hidden");
       fetchData();
-      showProductToast("create");
+      showProductToast("create", "دوره با موفقیت ایجاد شد.");
     }
   });
 }
@@ -296,33 +272,21 @@ const handleValidation = (title, price) => {
   return true;
 };
 
-function showProductToast(type) {
+function showProductToast(status, message) {
   productToast.classList.remove("hidden");
+  productToastContentElem.innerHTML = message;
   let step = 1;
-  productToastContentElem.innerHTML = "";
 
-  switch (type) {
-    case "delete": {
-      productToast.className = "toast product-toast failed";
-      productToastContentElem.innerHTML = "دوره با موفقیت حذف شد.";
-      break;
-    }
-    case "edit": {
-      productToast.className = "toast product-toast success";
-      productToastContentElem.innerHTML = "دوره با موفقیت ویرایش شد.";
-      break;
-    }
+  if (status === "delete") {
+    productToast.className = "toast product-toast failed";
+  }
 
-    case "create": {
-      productToast.className = "toast product-toast success";
-      productToastContentElem.innerHTML = "دوره با موفقیت ایجاد شد.";
-      break;
-    }
+  if (status === "edit") {
+    productToast.className = "toast product-toast success";
+  }
 
-    default: {
-      productToast.className = "toast product-toast success";
-      productToastContentElem.innerHTML = "دوره با موفقیت ایجاد شد.";
-    }
+  if (status === "create") {
+    productToast.className = "toast product-toast success";
   }
 
   const productToastInterval = setInterval(() => {
@@ -382,7 +346,7 @@ function removeProduct() {
     if (response.status === 200) {
       fetchData();
       modalProductScreen.classList.add("hidden");
-      showProductToast("delete");
+      showProductToast("delete", "دوره با موفقیت حذف شد.");
     }
   });
 }
@@ -484,7 +448,7 @@ function editProduct() {
     if (response.status === 201) {
       fetchData();
       modalProductScreen.classList.add("hidden");
-      showProductToast("edit");
+      showProductToast("edit", "دوره با موفقیت ویرایش شد.");
     }
   });
 }
