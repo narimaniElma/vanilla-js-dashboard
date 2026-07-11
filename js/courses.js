@@ -105,6 +105,8 @@ function generatePagination(activePageBox = 1) {
 
     for (let i = 0; i < coursePagesCount; i++) {
       const pageNumber = i + 1;
+      if (courses.length < coursePerPage) return;
+
       paginationElem.insertAdjacentHTML(
         "beforeend",
         `

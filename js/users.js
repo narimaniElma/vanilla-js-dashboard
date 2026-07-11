@@ -102,6 +102,8 @@ function generateUsersPagination(activePageBox = 1) {
 
     for (let i = 0; i < userPagesCount; i++) {
       const pageNumber = i + 1;
+      if (users.length < userPerPage) return;
+
       paginationUsers.insertAdjacentHTML(
         "beforeend",
         `
