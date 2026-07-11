@@ -11,9 +11,7 @@ const coursesCountElem = document.querySelector(".products-data");
 const paginationElem = document.querySelector(".pagination-products");
 const toastElem = document.querySelector(".product-toast");
 const toastProcessElem = document.querySelector(".process-product");
-const toastContentElem = document.querySelector(
-  ".toast-content-product",
-);
+const toastContentElem = document.querySelector(".toast-content-product");
 
 let mainCourse;
 
@@ -23,6 +21,7 @@ let courseIdToRemove;
 let courseIdToUpdate;
 let coursesStartIndex = 0;
 let coursesEndIndex = coursePerPage;
+let isLoading = true;
 
 const fetchData = () => {
   fetch(url)
@@ -34,6 +33,8 @@ const fetchData = () => {
       setCache("courses", courses);
       generatePagination();
     });
+
+  isLoading = false;
 };
 
 function showCourses() {
@@ -62,6 +63,11 @@ function showCourses() {
         `,
       );
     });
+  } else {
+    coursesTable.insertAdjacentHTML(
+      "beforeend",
+      '<h4 style="text-align: center;">در حال دریافت اطلاعات</h4>',
+    );
   }
 
   coursesTable.addEventListener("click", (e) => {

@@ -21,6 +21,7 @@ let userIdToUpdate;
 let usersStartIndex = 0;
 let usersEndIndex = userPerPage;
 let currentUserPage;
+let isLoading = true;
 
 const fetchData = () => {
   fetch(url)
@@ -32,6 +33,8 @@ const fetchData = () => {
       setCache("users", users);
       generateUsersPagination();
     });
+
+  isLoading = false;
 };
 
 function showUsers() {
@@ -61,6 +64,11 @@ function showUsers() {
         `,
       );
     });
+  } else {
+    usersTable.insertAdjacentHTML(
+      "beforeend",
+      '<h4 style="text-align: center;">در حال دریافت اطلاعات</h4>',
+    );
   }
 
   usersTable.addEventListener("click", (e) => {

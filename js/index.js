@@ -5,8 +5,25 @@ const baseUrl = "https://js-cms.iran.liara.run/api";
 const heroCardCoursesCountElem = document.querySelector("p.products-count");
 const homeCoursesCountElem = document.querySelector("span.products-count");
 const homeUsersCountElem = document.querySelector(".users-count");
-const latestUsersContainer = document.querySelector(".latest-users");
+const latestUsersContainer = document.querySelector(".latest-users .users");
 const latestCoursesContainer = document.querySelector(".latest-products");
+
+let courseLoading = true;
+let userLoading = true;
+
+if (courseLoading) {
+  latestCoursesContainer.insertAdjacentHTML(
+    "beforeend",
+    '<h4 style="text-align: center">در حال دریافت اطلاعات دوره ها</h4>',
+  );
+}
+
+if (userLoading) {
+  latestUsersContainer.insertAdjacentHTML(
+    "beforeend",
+    '<h4 style="text-align: center">در حال دریافت کاربران</h4>',
+  );
+}
 
 const getCourses = () => {
   fetch(`${baseUrl}/courses`)
@@ -17,21 +34,25 @@ const getCourses = () => {
 
       showLatestCourses(courses);
     });
+
+  courseLoading = false;
 };
 
 const getUsers = () => {
   fetch(`${baseUrl}/users`)
     .then((response) => response.json())
     .then((users) => {
-      console.log(users);
       homeUsersCountElem.innerHTML = users.length;
 
       showLatestUsers(users);
     });
+
+  userLoading = false;
 };
 
 function showLatestUsers(users) {
   const latestUsers = users.splice(-3);
+  latestUsersContainer.innerHTML = "";
 
   latestUsers.forEach(function (latestUser) {
     latestUsersContainer.insertAdjacentHTML(
@@ -53,17 +74,18 @@ function showLatestUsers(users) {
 
 function showLatestCourses(courses) {
   const latestCourses = courses.splice(-3);
+  latestCoursesContainer.innerHTML = "";
 
   latestCourses.forEach(function (latestCourse) {
     latestCoursesContainer.insertAdjacentHTML(
       "beforeend",
       `
-        <div class="tableRow">
-          <p class="product-title">${latestCourse.title}</p>
-          <p class="product-price">${latestCourse.price.toLocaleString()}</p>
-          <p class="product-registersCount">${latestCourse.registersCount}</p>
-        </div>
-      `,
+          <div class="tableRow">
+            <p class="product-title">${latestCourse.title}</p>
+            <p class="product-price">${latestCourse.price.toLocaleString()}</p>
+            <p class="product-registersCount">${latestCourse.registersCount}</p>
+          </div>
+        `,
     );
   });
 }
