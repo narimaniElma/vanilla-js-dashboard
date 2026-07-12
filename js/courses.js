@@ -16,7 +16,7 @@ const toastContentElem = document.querySelector(".toast-content-product");
 let mainCourse;
 
 const coursePerPage = 4;
-let courses;
+let courses = [];
 let courseIdToRemove;
 let courseIdToUpdate;
 let coursesStartIndex = 0;
@@ -24,12 +24,32 @@ let coursesEndIndex = coursePerPage;
 let isLoading = true;
 
 const fetchData = () => {
+  if (isLoading) {
+    coursesTable.innerHTML = "";
+
+    coursesTable.insertAdjacentHTML(
+      "beforeend",
+      '<h4 style="text-align: center;">در حال دریافت اطلاعات</h4>',
+    );
+  }
+
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
       courses = data;
       coursesCountElem.innerHTML = courses.length;
-      showCourses();
+
+      if (courses.length === 0) {
+        coursesTable.innerHTML = "";
+
+        coursesTable.insertAdjacentHTML(
+          "beforeend",
+          '<h4 style="text-align: center">دوره ای وجود ندارد.</h4>',
+        );
+      } else {
+        showCourses();
+      }
+
       setCache("courses", courses);
       generatePagination();
     });
@@ -40,13 +60,12 @@ const fetchData = () => {
 function showCourses() {
   coursesTable.innerHTML = "";
 
-  if (courses) {
-    const coursesSlic = courses.slice(coursesStartIndex, coursesEndIndex);
+  const coursesSlic = courses.slice(coursesStartIndex, coursesEndIndex);
 
-    coursesSlic.forEach(function (course) {
-      coursesTable.insertAdjacentHTML(
-        "beforeend",
-        `
+  coursesSlic.forEach(function (course) {
+    coursesTable.insertAdjacentHTML(
+      "beforeend",
+      `
           <div class="tableRow">
             <p class="product-title">${course.title}</p>
             <p class="product-price">${course.price.toLocaleString()}</p>
@@ -61,14 +80,8 @@ function showCourses() {
             </div>
           </div>
         `,
-      );
-    });
-  } else {
-    coursesTable.insertAdjacentHTML(
-      "beforeend",
-      '<h4 style="text-align: center;">در حال دریافت اطلاعات</h4>',
     );
-  }
+  });
 
   coursesTable.addEventListener("click", (e) => {
     const editBtn = e.target.closest(".edit-btn");

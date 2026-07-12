@@ -15,7 +15,7 @@ const userToastContentElem = document.querySelector(".toast-content-user");
 
 let mainUser;
 const userPerPage = 4;
-let users;
+let users = [];
 let userIdToRemove;
 let userIdToUpdate;
 let usersStartIndex = 0;
@@ -24,12 +24,32 @@ let currentUserPage;
 let isLoading = true;
 
 const fetchData = () => {
+  if (isLoading) {
+    usersTable.innerHTML = "";
+
+    usersTable.insertAdjacentHTML(
+      "beforeend",
+      '<h4 style="text-align: center;">در حال دریافت اطلاعات</h4>',
+    );
+  }
+
   fetch(url)
     .then((response) => response.json())
     .then((data) => {
       users = data;
       usersCountElem.innerHTML = users.length;
-      showUsers();
+
+      if (users.length === 0) {
+        usersTable.innerHTML = "";
+
+        usersTable.insertAdjacentHTML(
+          "beforeend",
+          '<h4 style="text-align: center">کاربری وجود ندارد.</h4>',
+        );
+      } else {
+        showUsers();
+      }
+      
       setCache("users", users);
       generateUsersPagination();
     });
@@ -40,13 +60,12 @@ const fetchData = () => {
 function showUsers() {
   usersTable.innerHTML = "";
 
-  if (users) {
-    const usersSlice = users.slice(usersStartIndex, usersEndIndex);
+  const usersSlice = users.slice(usersStartIndex, usersEndIndex);
 
-    usersSlice.forEach(function (user) {
-      usersTable.insertAdjacentHTML(
-        "beforeend",
-        `
+  usersSlice.forEach(function (user) {
+    usersTable.insertAdjacentHTML(
+      "beforeend",
+      `
             <div class="tableRow">
                 <p class="user-firstname">${user.firstname}</p>
                 <p class="user-lastname">${user.lastname}</p>
@@ -62,12 +81,13 @@ function showUsers() {
                 </div>
             </div>
         `,
-      );
-    });
-  } else {
+    );
+  });
+
+  if (isLoading && users.length) {
     usersTable.insertAdjacentHTML(
       "beforeend",
-      '<h4 style="text-align: center;">در حال دریافت اطلاعات</h4>',
+      '<h4 style="text-align: center">کاربری وجود ندارد.</h4>',
     );
   }
 
