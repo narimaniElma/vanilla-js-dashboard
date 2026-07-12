@@ -49,7 +49,7 @@ const fetchData = () => {
       } else {
         showUsers();
       }
-      
+
       setCache("users", users);
       generateUsersPagination();
     });
@@ -67,8 +67,7 @@ function showUsers() {
       "beforeend",
       `
             <div class="tableRow">
-                <p class="user-firstname">${user.firstname}</p>
-                <p class="user-lastname">${user.lastname}</p>
+                <p class="user-firstname">${user.firstname} ${user.lastname}</p>
                 <p class="user-username">${user.username}</p>
                 <p class="user-email">${user.email}</p>
                 <div class="product-manage">
@@ -83,13 +82,6 @@ function showUsers() {
         `,
     );
   });
-
-  if (isLoading && users.length) {
-    usersTable.insertAdjacentHTML(
-      "beforeend",
-      '<h4 style="text-align: center">کاربری وجود ندارد.</h4>',
-    );
-  }
 
   usersTable.addEventListener("click", (e) => {
     const editBtn = e.target.closest(".edit-btn");
