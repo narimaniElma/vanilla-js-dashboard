@@ -1,24 +1,24 @@
 # About This Project
 
-This project focuses on core JavaScript fundamentals and DOM manipulation. It includes three pages: Home, Products, and Users, and also supports a dark mode theme.
+A simple CMS dashboard built with Vanilla JavaScript for managing products and users.
+The application consumes a REST API for all CRUD operations and displays the data through a responsive dashboard interface. To improve performance and reduce unnecessary network requests, the application caches data locally and periodically synchronizes it with the server.
 
-## Home Page
+## Features
 
-Displays an overview of the latest added products and users.
-
-## Products Page
-
-Displays a paginated table of products. Users can add, edit, and delete products.
-
-## Users Page
-
-Displays a paginated table of users. Users can add, edit, and delete users.
+- Dashboard overview
+- Products management
+- Users management
+- Full CRUD operations via REST API
+- Client-side caching using LocalStorage
+- Pagination
+- Dark mode
 
 ## Technologies
 
-- JavaScript
-- CSS
-- HTML
+- HTML5
+- CSS3
+- JavaScript (ES6+)
+- REST API
 
 ## Demo
 
