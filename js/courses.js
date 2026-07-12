@@ -60,12 +60,13 @@ const fetchData = () => {
 function showCourses() {
   coursesTable.innerHTML = "";
 
-  const coursesSlic = courses.slice(coursesStartIndex, coursesEndIndex);
+  if (courses) {
+    const coursesSlic = courses.slice(coursesStartIndex, coursesEndIndex);
 
-  coursesSlic.forEach(function (course) {
-    coursesTable.insertAdjacentHTML(
-      "beforeend",
-      `
+    coursesSlic.forEach(function (course) {
+      coursesTable.insertAdjacentHTML(
+        "beforeend",
+        `
           <div class="tableRow">
             <p class="product-title">${course.title}</p>
             <p class="product-price">${course.price.toLocaleString()}</p>
@@ -80,21 +81,22 @@ function showCourses() {
             </div>
           </div>
         `,
-    );
-  });
+      );
+    });
 
-  coursesTable.addEventListener("click", (e) => {
-    const editBtn = e.target.closest(".edit-btn");
-    const removeBtn = e.target.closest(".remove-btn");
+    coursesTable.addEventListener("click", (e) => {
+      const editBtn = e.target.closest(".edit-btn");
+      const removeBtn = e.target.closest(".remove-btn");
 
-    if (editBtn) {
-      showEditCourseModal(editBtn.dataset.id);
-    }
+      if (editBtn) {
+        showEditCourseModal(editBtn.dataset.id);
+      }
 
-    if (removeBtn) {
-      showRemoveCourseModal(removeBtn.dataset.id);
-    }
-  });
+      if (removeBtn) {
+        showRemoveCourseModal(removeBtn.dataset.id);
+      }
+    });
+  }
 }
 
 window.addEventListener("load", fetchData);

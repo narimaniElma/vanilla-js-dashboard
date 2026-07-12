@@ -60,12 +60,13 @@ const fetchData = () => {
 function showUsers() {
   usersTable.innerHTML = "";
 
-  const usersSlice = users.slice(usersStartIndex, usersEndIndex);
+  if (users) {
+    const usersSlice = users.slice(usersStartIndex, usersEndIndex);
 
-  usersSlice.forEach(function (user) {
-    usersTable.insertAdjacentHTML(
-      "beforeend",
-      `
+    usersSlice.forEach(function (user) {
+      usersTable.insertAdjacentHTML(
+        "beforeend",
+        `
             <div class="tableRow">
                 <p class="user-firstname">${user.firstname} ${user.lastname}</p>
                 <p class="user-username">${user.username}</p>
@@ -80,21 +81,22 @@ function showUsers() {
                 </div>
             </div>
         `,
-    );
-  });
+      );
+    });
 
-  usersTable.addEventListener("click", (e) => {
-    const editBtn = e.target.closest(".edit-btn");
-    const removeBtn = e.target.closest(".remove-btn");
+    usersTable.addEventListener("click", (e) => {
+      const editBtn = e.target.closest(".edit-btn");
+      const removeBtn = e.target.closest(".remove-btn");
 
-    if (editBtn) {
-      showEditUserModal(editBtn.dataset.id);
-    }
+      if (editBtn) {
+        showEditUserModal(editBtn.dataset.id);
+      }
 
-    if (removeBtn) {
-      showRemoveUserModal(removeBtn.dataset.id);
-    }
-  });
+      if (removeBtn) {
+        showRemoveUserModal(removeBtn.dataset.id);
+      }
+    });
+  }
 }
 
 function getUsersData() {
