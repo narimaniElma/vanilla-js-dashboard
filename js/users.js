@@ -37,9 +37,12 @@ const fetchData = () => {
     .then((response) => response.json())
     .then((data) => {
       users = Object.values(data);
+      const usersIds = Object.keys(data);
+      users.forEach((user, index) => user._id = usersIds[index]);
+
       console.log("data", data);
       console.log("users", users);
-      console.log("keys", Object.keys(data));
+      console.log("keys", usersIds);
       usersCountElem.innerHTML = users.length;
 
       if (users.length === 0) {
@@ -230,10 +233,11 @@ function showRemoveUserModal(userId) {
 }
 
 function removeUser() {
-  fetch(`${url}/${userIdToRemove}`, {
+  fetch(`${url}/users/${userIdToRemove}.json`, {
     method: "DELETE",
   }).then((response) => {
     if (response.status === 200) {
+      console.log("userIdToRemove", userIdToRemove);
       fetchData();
       modalUserScreen.classList.add("hidden");
       showUserToast("delete", "کاربر با موفقیت حذف شد.");
