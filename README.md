@@ -1,12 +1,12 @@
 # About This Project
 
-A simple CMS dashboard built with Vanilla JavaScript for managing products and users.
+A simple CMS dashboard built with Vanilla JavaScript for managing courses and users.
 The application consumes a REST API for all CRUD operations and displays the data through a responsive dashboard interface. To improve performance and reduce unnecessary network requests, the application caches data locally and periodically synchronizes it with the server.
 
 ## Features
 
 - Dashboard overview
-- Products management
+- Courses management
 - Users management
 - Full CRUD operations via REST API
 - Client-side caching using LocalStorage
