@@ -253,7 +253,7 @@ function createNewCourse() {
   fetch(url, {
     method: "POST",
     headers: {
-      "content-type": "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(newCourse),
   }).then((response) => {
@@ -464,7 +464,7 @@ function editCourse() {
   fetch(`${url}/${courseIdToUpdate}`, {
     method: "PUT",
     headers: {
-      "content-type": "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(updatedCourse),
   }).then((response) => {

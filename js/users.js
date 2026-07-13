@@ -336,7 +336,7 @@ function editUser() {
   fetch(`${url}/${userIdToUpdate}`, {
     method: "PUT",
     headers: {
-      "content-type": "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(updatedUser),
   }).then((response) => {
@@ -433,7 +433,7 @@ function createNewUser() {
   fetch(url, {
     method: "POST",
     headers: {
-      "content-type": "application/json",
+      "Content-Type": "application/json",
     },
     body: JSON.stringify(newUser),
   }).then((response) => {
