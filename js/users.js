@@ -1,7 +1,7 @@
 import { getTheme } from "./theme.js";
 import { setCache, getCache } from "../helpers/cashe.js";
 
-const url = "https://js-cms.iran.liara.run/api/users";
+const url = "https://cms-js-9f8e1-default-rtdb.firebaseio.com";
 
 const usersCountElem = document.querySelector(".users-data");
 const createUserBtn = document.querySelector("#create-user");
@@ -33,10 +33,13 @@ const fetchData = () => {
     );
   }
 
-  fetch(url)
+  fetch(`${url}/users.json`)
     .then((response) => response.json())
     .then((data) => {
-      users = data;
+      users = Object.values(data);
+      console.log("data", data);
+      console.log("users", users);
+      console.log("keys", Object.keys(data));
       usersCountElem.innerHTML = users.length;
 
       if (users.length === 0) {
@@ -426,18 +429,16 @@ function createNewUser() {
     lastname,
     username,
     email,
-    age: 20,
-    city: "تهران",
   };
 
-  fetch(url, {
+  fetch(`${url}/users.json`, {
     method: "POST",
     headers: {
       "Content-Type": "application/json",
     },
     body: JSON.stringify(newUser),
   }).then((response) => {
-    if (response.status === 201) {
+    if (response.status === 200) {
       modalUserScreen.classList.add("hidden");
       fetchData();
       showUserToast("create", "کاربر با موفقیت ایجاد شد.");
