@@ -78,10 +78,10 @@ function showUsers() {
                 <p class="user-username">${user[1].username}</p>
                 <p class="user-email">${user[1].email}</p>
                 <div class="product-manage">
-                    <button class="edit-btn" data-id="${user[0]}">                        
+                    <button class="edit-btn" onclick='showEditUserModal(${JSON.stringify(user)})'>                        
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="remove-btn" data-id="${user[0]}">
+                    <button class="remove-btn" data-id="${user[0]}" >
                         <i class="fas fa-ban"></i>
                     </button>
                 </div>
@@ -91,12 +91,7 @@ function showUsers() {
     });
 
     usersTable.addEventListener("click", (e) => {
-      const editBtn = e.target.closest(".edit-btn");
       const removeBtn = e.target.closest(".remove-btn");
-
-      if (editBtn) {
-        showEditUserModal(editBtn.dataset.id);
-      }
 
       if (removeBtn) {
         showRemoveUserModal(removeBtn.dataset.id);
@@ -303,17 +298,16 @@ function editUserModal(user) {
   hideUserModal();
 }
 
-function showEditUserModal(userId) {
-  console.log(userId)
-  userIdToUpdate = userId;
-  mainUser = users.find(function (user) {
-    return user[0] === userId;
-  });
+window.showEditUserModal = (user) => {
+  console.log(user);
+  userIdToUpdate = user[0];
 
-  editUserModal(mainUser);
+  mainUser = user;
+
+  editUserModal(user);
 
   modalUserScreen.classList.remove("hidden");
-}
+};
 
 function editUser() {
   const firstname = document.querySelector("#user-firstname").value;
@@ -334,8 +328,6 @@ function editUser() {
     lastname,
     username,
     email,
-    age: 20,
-    city: "تهران",
   };
 
   fetch(`${url}/users/${userIdToUpdate}.json`, {
