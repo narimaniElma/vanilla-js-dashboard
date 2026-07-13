@@ -36,13 +36,14 @@ const fetchData = () => {
   fetch(`${url}/users.json`)
     .then((response) => response.json())
     .then((data) => {
-      users = Object.values(data);
-      const usersIds = Object.keys(data);
-      users.forEach((user, index) => user._id = usersIds[index]);
+      users = Object.entries(data);
+      // const usersIds = Object.keys(data);
+
+      // users.forEach((user, index) => user._id = usersIds[index]);
 
       console.log("data", data);
       console.log("users", users);
-      console.log("keys", usersIds);
+      // console.log("keys", usersIds);
       usersCountElem.innerHTML = users.length;
 
       if (users.length === 0) {
@@ -74,14 +75,14 @@ function showUsers() {
         "beforeend",
         `
             <div class="tableRow">
-                <p class="user-firstname">${user.firstname} ${user.lastname}</p>
-                <p class="user-username">${user.username}</p>
-                <p class="user-email">${user.email}</p>
+                <p class="user-firstname">${user[1].firstname} ${user[1].lastname}</p>
+                <p class="user-username">${user[1].username}</p>
+                <p class="user-email">${user[1].email}</p>
                 <div class="product-manage">
-                    <button class="edit-btn" data-id="${user._id}">                        
+                    <button class="edit-btn" data-id="${user[0]}">                        
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="remove-btn" data-id="${user._id}">
+                    <button class="remove-btn" data-id="${user[0]}">
                         <i class="fas fa-ban"></i>
                     </button>
                 </div>
@@ -237,7 +238,6 @@ function removeUser() {
     method: "DELETE",
   }).then((response) => {
     if (response.status === 200) {
-      console.log("userIdToRemove", userIdToRemove);
       fetchData();
       modalUserScreen.classList.add("hidden");
       showUserToast("delete", "کاربر با موفقیت حذف شد.");
