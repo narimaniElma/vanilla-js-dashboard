@@ -1,4 +1,3 @@
-import { getTheme } from "./theme.js";
 import { setCache, getCache } from "../helpers/cashe.js";
 
 const url = "https://js-cms.iran.liara.run/api/courses";
@@ -110,8 +109,6 @@ function getCourses() {
   } else {
     fetchData();
   }
-
-  getTheme();
 
   if (courses) {
     coursesCountElem.innerHTML = courses.length;

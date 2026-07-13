@@ -1,4 +1,3 @@
-import { getTheme } from "./theme.js";
 
 const baseUrl = "https://js-cms.iran.liara.run/api";
 
@@ -111,8 +110,6 @@ function showLatestCourses(courses) {
 }
 
 window.addEventListener("load", () => {
-  getTheme();
-
   getCourses();
   getUsers();
 });

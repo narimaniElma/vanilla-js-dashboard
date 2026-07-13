@@ -1,4 +1,3 @@
-import { getTheme } from "./theme.js";
 import { setCache, getCache } from "../helpers/cashe.js";
 
 const url = "https://cms-js-9f8e1-default-rtdb.firebaseio.com";
@@ -115,8 +114,6 @@ function getUsersData() {
   } else {
     fetchData();
   }
-
-  getTheme();
 
   if (users) {
     usersCountElem.innerHTML = users.length;

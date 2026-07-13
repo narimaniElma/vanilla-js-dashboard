@@ -25,7 +25,7 @@ function changeTheme() {
   setThemeInLocalStorage();
 }
 
-export function getTheme() {
+function getTheme() {
   const localTheme = localStorage.getItem("theme");
 
   if (localTheme) {
@@ -53,4 +53,5 @@ function setThemeInLocalStorage() {
   localStorage.setItem("theme", theme);
 }
 
+window.addEventListener("load", getTheme);
 themeButton?.addEventListener("click", changeTheme);
