@@ -81,21 +81,13 @@ function showUsers() {
                     <button class="edit-btn" onclick='showEditUserModal(${JSON.stringify(user)})'>                        
                         <i class="fas fa-edit"></i>
                     </button>
-                    <button class="remove-btn" data-id="${user[0]}" >
+                    <button class="remove-btn" onclick="showRemoveUserModal('${user[0]}')">
                         <i class="fas fa-ban"></i>
                     </button>
                 </div>
             </div>
         `,
       );
-    });
-
-    usersTable.addEventListener("click", (e) => {
-      const removeBtn = e.target.closest(".remove-btn");
-
-      if (removeBtn) {
-        showRemoveUserModal(removeBtn.dataset.id);
-      }
     });
   }
 }
@@ -219,11 +211,11 @@ function removeUserModal() {
   hideUserModal();
 }
 
-function showRemoveUserModal(userId) {
+window.showRemoveUserModal = (userId) => {
   userIdToRemove = userId;
   removeUserModal();
   modalUserScreen.classList.remove("hidden");
-}
+};
 
 function removeUser() {
   fetch(`${url}/users/${userIdToRemove}.json`, {
