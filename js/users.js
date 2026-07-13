@@ -260,7 +260,7 @@ function editUserModal(user) {
         <main class="modal-content">
           <input
             required
-            value='${user.firstname}'
+            value='${user[1].firstname}'
             type="text"
             class="modal-input"
             placeholder="نام را وارد نمائید ..."
@@ -268,7 +268,7 @@ function editUserModal(user) {
           />
           <input
             required
-            value='${user.lastname}'
+            value='${user[1].lastname}'
             type="text"
             class="modal-input"
             placeholder="نام خانوادگی را وارد نمائید ..."
@@ -277,7 +277,7 @@ function editUserModal(user) {
           <input
             required
             type="text"
-            value='${user.username}'
+            value='${user[1].username}'
             class="modal-input"
             id="user-username"
             placeholder="نام کاربری را وارد نمائید ..."
@@ -285,7 +285,7 @@ function editUserModal(user) {
           <input
             required
             type="email"
-            value='${user.email}'
+            value='${user[1].email}'
             class="modal-input"
             id="user-email"
             placeholder="ایمیل را وارد نمائید ..."
@@ -307,9 +307,10 @@ function editUserModal(user) {
 }
 
 function showEditUserModal(userId) {
+  console.log(userId)
   userIdToUpdate = userId;
   mainUser = users.find(function (user) {
-    return user._id === userId;
+    return user[0] === userId;
   });
 
   editUserModal(mainUser);
@@ -340,7 +341,7 @@ function editUser() {
     city: "تهران",
   };
 
-  fetch(`${url}/${userIdToUpdate}`, {
+  fetch(`${url}/users/${userIdToUpdate}.json`, {
     method: "PUT",
     headers: {
       "Content-Type": "application/json",
